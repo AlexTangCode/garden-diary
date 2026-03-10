@@ -8,12 +8,9 @@ import {
   onSnapshot,
   query,
   orderBy,
-  Timestamp,
 } from 'firebase/firestore';
 import type { Plot, Marker, HarvestLog, SpendLog } from '../types';
 
-// ─── REPLACE with your Firebase project config ───────────────
-// Get this from: Firebase Console → Project Settings → Your Apps → Web App
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -22,15 +19,12 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId:             import.meta.env.VITE_FIREBASE_APP_ID,
 };
-// ─────────────────────────────────────────────────────────────
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-// ── Collection helpers ────────────────────────────────────────
 const col = (name: string) => collection(db, name);
 
-// ── PLOTS ─────────────────────────────────────────────────────
 export const savePlot = (plot: Plot) =>
   setDoc(doc(col('plots'), plot.id), plot);
 
@@ -42,7 +36,6 @@ export const subscribePlots = (cb: (plots: Plot[]) => void) =>
     cb(snap.docs.map(d => d.data() as Plot));
   });
 
-// ── MARKERS ───────────────────────────────────────────────────
 export const saveMarker = (marker: Marker) =>
   setDoc(doc(col('markers'), marker.id), marker);
 
@@ -54,7 +47,6 @@ export const subscribeMarkers = (cb: (markers: Marker[]) => void) =>
     cb(snap.docs.map(d => d.data() as Marker));
   });
 
-// ── HARVESTS ──────────────────────────────────────────────────
 export const saveHarvest = (log: HarvestLog) =>
   setDoc(doc(col('harvests'), log.id), log);
 
@@ -66,7 +58,6 @@ export const subscribeHarvests = (cb: (logs: HarvestLog[]) => void) =>
     cb(snap.docs.map(d => d.data() as HarvestLog));
   });
 
-// ── SPENDS ────────────────────────────────────────────────────
 export const saveSpend = (log: SpendLog) =>
   setDoc(doc(col('spends'), log.id), log);
 
@@ -78,8 +69,4 @@ export const subscribeSpends = (cb: (logs: SpendLog[]) => void) =>
     cb(snap.docs.map(d => d.data() as SpendLog));
   });
 
-// ── ID generator ──────────────────────────────────────────────
-export const newId = () =>
-  doc(collection(db, '_')).id;
-
-export { Timestamp };
+export const newId = () => doc(collection(db, '_')).id;
