@@ -1,0 +1,49 @@
+/* ── Design tokens — 精确匹配 eggs-log 风格 ────────────── */
+:root {
+  /* Font */
+  --ff: -apple-system, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+
+  /* Background: warm oat */
+  --bg:     #F0EBE3;
+  --bg2:    #E8E1D8;
+
+  /* Card: pure white */
+  --card:   #FFFFFF;
+  --card2:  #FAFAF8;
+
+  /* Text */
+  --t1: #2C2018;
+  --t2: #8C7B6E;
+  --t3: #B8A898;
+  --t4: #D4CBBD;
+
+  /* Accent: orange-brown */
+  --acc:    #C8845A;
+  --acc2:   #E5A876;
+  --acc-bg: #FAF0E8;
+
+  /* Semantic */
+  --green:   #6BA368;
+  --green-l: #EEF6EE;
+  --red:     #C05858;
+  --red-l:   #FAEAEA;
+  --blue:    #5A82A8;
+  --blue-l:  #EBF1F8;
+  --teal:    #5A9E8C;
+  --teal-l:  #EBF6F3;
+
+  /* Radii */
+  --r-sm: 10px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+
+  /* Shadows */
+  --sh:  0 2px 12px rgba(44,32,24,.07);
+  --sh2: 0 6px 28px rgba(44,32,24,.11);
+  --sh3: 0 16px 48px rgba(44,32,24,.16);
+
+  /* Nav */
+  --nav-h: 88px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}

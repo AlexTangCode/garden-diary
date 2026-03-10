@@ -1,0 +1,54 @@
+@import './tokens.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--ff);
+  background: var(--bg);
+  color: var(--t1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+button {
+  font-family: var(--ff);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+input, select, textarea {
+  font-family: var(--ff);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Page enter animation */
+@keyframes pgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
