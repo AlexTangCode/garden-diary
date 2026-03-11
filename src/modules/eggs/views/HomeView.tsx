@@ -242,7 +242,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#F9F5F0] relative overflow-hidden pt-safe">
+    <div className="flex flex-col h-full bg-[#F9F5F0] relative overflow-hidden">
       <header className="pt-10 pb-4 px-10 flex items-center justify-between relative z-20">
         <div className="w-10"></div>
         <motion.h2
@@ -335,7 +335,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
         {showEntryModal && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[300] bg-[#F9F5F0]/80 backdrop-blur-3xl flex items-center justify-center p-6"
+            className="absolute inset-0 z-[300] bg-[#F9F5F0]/80 backdrop-blur-3xl flex items-center justify-center p-6"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
