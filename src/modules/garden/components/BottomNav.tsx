@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import type { GardenPageId } from '../../types/garden';
+import type { GardenPageId } from '@/types/garden';
 
 const ITEMS: { id: GardenPageId; icon: string; label: string }[] = [
   { id: 'map',     icon: '🏡', label: '地图'  },
