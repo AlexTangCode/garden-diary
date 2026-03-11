@@ -1,4 +1,4 @@
-# 🌿 后院管理
+# 🌿 后院管理2
 
 后院菜地管理 App — React + TypeScript + Vite + Firebase
 
