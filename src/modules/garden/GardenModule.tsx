@@ -2,21 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Info } from 'lucide-react';
 import type { Plot, Marker, HarvestLog, SpendLog, GardenPageId } from '@/types/garden';
-import {
-  subscribePlots, subscribeMarkers,
-  subscribeHarvests, subscribeSpends,
-} from '@/services/garden.firebase';
-import MapView     from './views/MapView';
-import HarvestView from './views/HarvestView';
-import SpendView   from './views/SpendView';
-import StatsView   from './views/StatsView';
+import { subscribePlots, subscribeMarkers, subscribeHarvests, subscribeSpends } from '@/services/garden.firebase';
+import MapView        from './views/MapView';
+import HarvestView    from './views/HarvestView';
+import SpendView      from './views/SpendView';
+import StatsView      from './views/StatsView';
 import MarkersListView from './views/MarkersListView';
-import BottomNav   from './components/BottomNav';
-import Header      from './components/Header';
+import BottomNav      from './components/BottomNav';
+import Header         from './components/Header';
 
-interface Props {
-  isActive: boolean;
-}
+interface Props { isActive: boolean; }
 
 const GardenModule: React.FC<Props> = ({ isActive }) => {
   const [page,     setPage]     = useState<GardenPageId>('map');
@@ -62,47 +57,49 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
+    /* Fill the pane completely */
     <div style={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      background: 'var(--bg)',
-      overflow: 'hidden',
+      position: 'absolute', inset: 0,
+      display: 'flex', flexDirection: 'column',
+      background: 'var(--bg)', overflow: 'hidden',
     }}>
-      <Header page={page} onAction={() => {
-        document.dispatchEvent(new CustomEvent('hdr-action'));
-      }} />
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+      {/* Header — pinned to top of THIS pane only */}
+      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+        <Header page={page} onAction={() => {
+          document.dispatchEvent(new CustomEvent('hdr-action'));
+        }} />
+      </div>
+
+      {/* Scrollable page content */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         {renderPage()}
       </div>
-      <BottomNav page={page} onNav={setPage} />
+
+      {/* Bottom nav — pinned to bottom of THIS pane only */}
+      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+        <BottomNav page={page} onNav={setPage} />
+      </div>
+
+      {/* Toast */}
       <AnimatePresence>
         {notification && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             style={{
               position: 'absolute',
               bottom: 'calc(var(--tab-h) + var(--safe-b) + 12px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 200,
-              width: '85%',
-              maxWidth: 300,
+              left: '50%', transform: 'translateX(-50%)',
+              zIndex: 200, width: '85%', maxWidth: 300,
             }}
           >
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '14px 18px',
-              borderRadius: 'var(--r-xl)',
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '14px 18px', borderRadius: 'var(--r-xl)',
               boxShadow: 'var(--sh3)',
               background: notification.type === 'success' ? 'var(--acc)' : 'var(--t1)',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 700,
+              color: '#fff', fontSize: 13, fontWeight: 700,
             }}>
               {notification.type === 'success' ? <CheckCircle size={16} /> : <Info size={16} />}
               {notification.message}
