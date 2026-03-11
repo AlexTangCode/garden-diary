@@ -1,4 +1,4 @@
-# 🌿 菜园日记
+# 🌿 后院管理
 
 后院菜地管理 App — React + TypeScript + Vite + Firebase
 
