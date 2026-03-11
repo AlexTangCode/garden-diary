@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Info } from 'lucide-react';
-import type { Plot, Marker, HarvestLog, SpendLog, GardenPageId } from '../../types/garden';
+import type { Plot, Marker, HarvestLog, SpendLog, GardenPageId } from '@/types/garden';
 import {
   subscribePlots, subscribeMarkers,
   subscribeHarvests, subscribeSpends,
-} from '../../services/garden.firebase';
-
-// ── Views (copy your existing garden-diary views into modules/garden/views/) ──
-// Imports will resolve once you migrate files in Phase 2.
+} from '@/services/garden.firebase';
 import MapView     from './views/MapView';
 import HarvestView from './views/HarvestView';
 import SpendView   from './views/SpendView';
@@ -18,7 +15,6 @@ import BottomNav   from './components/BottomNav';
 import Header      from './components/Header';
 
 interface Props {
-  /** True when this module pane is the visible one */
   isActive: boolean;
 }
 
@@ -36,7 +32,6 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // ── Real-time Firestore subscriptions ───────────────────
   useEffect(() => {
     const unsubs = [
       subscribePlots(data => {
@@ -77,14 +72,10 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
       <Header page={page} onAction={() => {
         document.dispatchEvent(new CustomEvent('hdr-action'));
       }} />
-
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {renderPage()}
       </div>
-
       <BottomNav page={page} onNav={setPage} />
-
-      {/* Notification toast */}
       <AnimatePresence>
         {notification && (
           <motion.div
