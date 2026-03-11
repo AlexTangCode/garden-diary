@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Info } from 'lucide-react';
-import { EggsView, Hen, EggLog, Expense } from '../../types/eggs';
-import { getHens, getEggLogs, getExpenses } from '../../services/eggs.firebase';
-
-// ── Views (copy your existing eggs-log views into modules/eggs/views/) ──
-// These imports will resolve once you migrate the view files in Phase 2.
-// For now they are stubbed so the shell compiles cleanly.
+import { EggsView, Hen, EggLog, Expense } from '@/types/eggs';
+import { getHens, getEggLogs, getExpenses } from '@/services/eggs.firebase';
 import HomeView       from './views/HomeView';
 import StatisticsView from './views/StatisticsView';
 import FinanceView    from './views/FinanceView';
@@ -15,7 +11,6 @@ import GuideView      from './views/GuideView';
 import Navigation     from './components/Navigation';
 
 interface Props {
-  /** True when this module pane is the visible one */
   isActive: boolean;
 }
 
@@ -102,13 +97,10 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
       <main style={{ flex: 1, overflowY: 'auto', paddingBottom: 'calc(var(--tab-h) + var(--safe-b))' }}>
         {renderView()}
       </main>
-
       <Navigation
         currentView={currentView}
         onViewChange={v => { setCurrentView(v); refreshData(); }}
       />
-
-      {/* Notification toast */}
       <AnimatePresence>
         {notification && (
           <motion.div
