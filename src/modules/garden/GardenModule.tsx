@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Info } from 'lucide-react';
-import type { Plot, Marker, HarvestLog, SpendLog, GardenPageId } from '../../../types/garden';
+import type { Plot, Marker, HarvestLog, SpendLog, GardenPageId } from '../../types/garden';
 import {
   subscribePlots, subscribeMarkers,
   subscribeHarvests, subscribeSpends,
-} from '../../../services/garden.firebase';
+} from '../../services/garden.firebase';
 
 // ── Views (copy your existing garden-diary views into modules/garden/views/) ──
 // Imports will resolve once you migrate files in Phase 2.
