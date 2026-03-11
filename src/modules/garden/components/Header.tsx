@@ -1,5 +1,5 @@
 import React from 'react';
-import type { GardenPageId } from '../../types/garden';
+import type { GardenPageId } from '@/types/garden';
 import { Plus } from 'lucide-react';
 
 const PAGE_META: Record<GardenPageId, { title: string; emoji: string; actionLabel?: string }> = {
