@@ -1,4 +1,64 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app';/**
+ * services/firebase.ts
+ * ─────────────────────────────────────────────────────────
+ * Initialises TWO separate Firebase app instances so each
+ * module talks to its own Firebase project while living in
+ * the same Vite bundle.
+ *
+ * Env vars required in .env:
+ *   # Eggs-log Firebase project
+ *   VITE_EGGS_API_KEY=...
+ *   VITE_EGGS_AUTH_DOMAIN=...
+ *   VITE_EGGS_PROJECT_ID=...
+ *   VITE_EGGS_STORAGE_BUCKET=...
+ *   VITE_EGGS_MESSAGING_SENDER_ID=...
+ *   VITE_EGGS_APP_ID=...
+ *
+ *   # Garden-diary Firebase project
+ *   VITE_GARDEN_API_KEY=...
+ *   VITE_GARDEN_AUTH_DOMAIN=...
+ *   VITE_GARDEN_PROJECT_ID=...
+ *   VITE_GARDEN_STORAGE_BUCKET=...
+ *   VITE_GARDEN_MESSAGING_SENDER_ID=...
+ *   VITE_GARDEN_APP_ID=...
+ *
+ *   # App password (no Firebase Auth needed)
+ *   VITE_APP_PASSWORD=your_password_here
+ */
+
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+
+// ── Eggs Firebase ────────────────────────────────────────
+const eggsConfig = {
+  apiKey:            import.meta.env.VITE_EGGS_API_KEY,
+  authDomain:        import.meta.env.VITE_EGGS_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_EGGS_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_EGGS_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_EGGS_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_EGGS_APP_ID,
+};
+
+// ── Garden Firebase ──────────────────────────────────────
+const gardenConfig = {
+  apiKey:            import.meta.env.VITE_GARDEN_API_KEY,
+  authDomain:        import.meta.env.VITE_GARDEN_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_GARDEN_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_GARDEN_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_GARDEN_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_GARDEN_APP_ID,
+};
+
+// Guard against HMR double-init in development
+const eggsApp  = getApps().find(a => a.name === 'eggs')
+  ?? initializeApp(eggsConfig,  'eggs');
+
+const gardenApp = getApps().find(a => a.name === 'garden')
+  ?? initializeApp(gardenConfig, 'garden');
+
+export const eggsDb  = getFirestore(eggsApp);
+export const gardenDb = getFirestore(gardenApp);
+
 import {
   getFirestore,
   collection,
