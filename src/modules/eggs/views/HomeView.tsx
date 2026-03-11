@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Egg, Calendar, Scale, Hash, X, Check, TrendingUp, CalendarDays, Download } from 'lucide-react';
-import { addDoc } from 'firebase/firestore';
 import { Hen, EggLog, EggsView } from '../../../types/eggs';
-import { eggLogsRef, incrementEggInventory } from '../../../services/eggs.firebase';
+import { addEggLog, incrementEggInventory } from '../../../services/eggs.firebase';
 import HenGraphic from '../components/HenGraphic';
 import PosterModal from '../components/PosterModal';
 
@@ -221,7 +220,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
       const harvestDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds());
 
       try {
-        await addDoc(eggLogsRef, {
+        await addEggLog({
           henId: activeHen.id,
           henName: activeHen.name,
           weight: Number(entryWeight),
