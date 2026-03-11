@@ -1,10 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import ModuleNav from './ModuleNav';
 import { useAuth } from '../auth/AuthContext';
-
-// Lazy import module roots — keeps each module's chunk separate
-import EggsModule  from '../modules/eggs/EggsModule';
+import EggsModule   from '../modules/eggs/EggsModule';
 import GardenModule from '../modules/garden/GardenModule';
 
 export type ModuleId = 'eggs' | 'garden';
@@ -18,10 +15,9 @@ const AppShell: React.FC = () => {
   const { logout } = useAuth();
   const [activeModule, setActiveModule] = useState<ModuleId>('eggs');
 
-  // ── Swipe gesture state ─────────────────────────────────
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
-  const SWIPE_THRESHOLD = 60; // px
+  const SWIPE_THRESHOLD = 60;
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -30,22 +26,14 @@ const AppShell: React.FC = () => {
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (touchStartX.current === null || touchStartY.current === null) return;
-
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
-
-    // Only register horizontal swipes (ignore scroll attempts)
     if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dy) > Math.abs(dx) * 0.8) {
       touchStartX.current = null;
       return;
     }
-
-    if (dx < 0 && activeModule === 'eggs') {
-      setActiveModule('garden');
-    } else if (dx > 0 && activeModule === 'garden') {
-      setActiveModule('eggs');
-    }
-
+    if (dx < 0 && activeModule === 'eggs')   setActiveModule('garden');
+    if (dx > 0 && activeModule === 'garden') setActiveModule('eggs');
     touchStartX.current = null;
     touchStartY.current = null;
   }, [activeModule]);
@@ -54,50 +42,65 @@ const AppShell: React.FC = () => {
 
   return (
     <div style={{
-      height: '100%',
+      position: 'fixed',
+      inset: 0,
       display: 'flex',
       flexDirection: 'column',
       background: 'var(--bg)',
       overflow: 'hidden',
     }}>
-      {/* ── Module Switcher Header ── */}
-      <ModuleNav
-        modules={MODULES}
-        active={activeModule}
-        onSwitch={setActiveModule}
-        onLogout={logout}
-      />
+      {/* ── Global top nav (one only) ── */}
+      <div style={{ flexShrink: 0, zIndex: 100, position: 'relative' }}>
+        <ModuleNav
+          modules={MODULES}
+          active={activeModule}
+          onSwitch={setActiveModule}
+          onLogout={logout}
+        />
+      </div>
 
-      {/* ── Swipeable Content Area ── */}
+      {/* ── Module panes ── */}
       <div
         style={{ flex: 1, overflow: 'hidden', position: 'relative' }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Slide container: both modules live side-by-side */}
+        {/* Slide track */}
         <div style={{
           display: 'flex',
           width: '200%',
           height: '100%',
           transform: `translateX(${moduleIndex === 0 ? '0%' : '-50%'})`,
-          transition: 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'transform 0.38s cubic-bezier(0.4,0,0.2,1)',
           willChange: 'transform',
         }}>
-          {/* Pane 0: Eggs */}
-          <div style={{ width: '50%', flexShrink: 0, height: '100%', overflow: 'hidden' }}>
+          {/* Pane 0 — Eggs */}
+          <div style={{
+            width: '50%',
+            flexShrink: 0,
+            height: '100%',
+            overflow: 'hidden',
+            position: 'relative',
+          }}>
             <EggsModule isActive={activeModule === 'eggs'} />
           </div>
 
-          {/* Pane 1: Garden */}
-          <div style={{ width: '50%', flexShrink: 0, height: '100%', overflow: 'hidden' }}>
+          {/* Pane 1 — Garden */}
+          <div style={{
+            width: '50%',
+            flexShrink: 0,
+            height: '100%',
+            overflow: 'hidden',
+            position: 'relative',
+          }}>
             <GardenModule isActive={activeModule === 'garden'} />
           </div>
         </div>
 
-        {/* ── Swipe hint dots ── */}
+        {/* Swipe dots */}
         <div style={{
           position: 'absolute',
-          bottom: 'calc(var(--tab-h) + var(--safe-b) + 10px)',
+          bottom: 8,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
