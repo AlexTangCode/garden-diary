@@ -10,9 +10,7 @@ import HensView       from './views/HensView';
 import GuideView      from './views/GuideView';
 import Navigation     from './components/Navigation';
 
-interface Props {
-  isActive: boolean;
-}
+interface Props { isActive: boolean; }
 
 const EggsModule: React.FC<Props> = ({ isActive }) => {
   const [currentView, setCurrentView] = useState<EggsView>(EggsView.HOME);
@@ -30,9 +28,7 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
   const refreshData = useCallback(async () => {
     try {
       const [h, l, e] = await Promise.all([getHens(), getEggLogs(), getExpenses()]);
-      setHens(h);
-      setLogs(l);
-      setExpenses(e);
+      setHens(h); setLogs(l); setExpenses(e);
     } catch (err) {
       console.error('[EggsModule] refreshData error', err);
     } finally {
@@ -40,15 +36,15 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
     }
   }, []);
 
-  useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+  useEffect(() => { refreshData(); }, [refreshData]);
 
   if (loading) {
     return (
       <div style={{
-        height: '100%', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', background: 'var(--bg)',
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: 'var(--bg)',
       }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🥚</div>
         <p style={{ color: 'var(--t3)', fontWeight: 600, fontSize: 14 }}>加载中…</p>
@@ -56,78 +52,74 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
     );
   }
 
-  const renderView = () => (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentView}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.25 }}
-        style={{ height: '100%', width: '100%' }}
-      >
-        {(() => {
-          switch (currentView) {
-            case EggsView.HOME:
-              return <HomeView hens={hens} logs={logs} onRefresh={refreshData} onNotify={showNotification} onNavigate={setCurrentView} />;
-            case EggsView.STATISTICS:
-              return <StatisticsView hens={hens} logs={logs} expenses={expenses} onRefresh={refreshData} />;
-            case EggsView.FINANCE:
-              return <FinanceView expenses={expenses} onRefresh={refreshData} onNotify={showNotification} />;
-            case EggsView.HENS:
-              return <HensView hens={hens} onRefresh={refreshData} onNotify={showNotification} />;
-            case EggsView.GUIDE:
-              return <GuideView onNotify={showNotification} />;
-            default:
-              return <HomeView hens={hens} logs={logs} onRefresh={refreshData} onNotify={showNotification} onNavigate={setCurrentView} />;
-          }
-        })()}
-      </motion.div>
-    </AnimatePresence>
-  );
+  const renderView = () => {
+    switch (currentView) {
+      case EggsView.HOME:
+        return <HomeView hens={hens} logs={logs} onRefresh={refreshData} onNotify={showNotification} onNavigate={setCurrentView} />;
+      case EggsView.STATISTICS:
+        return <StatisticsView hens={hens} logs={logs} expenses={expenses} onRefresh={refreshData} />;
+      case EggsView.FINANCE:
+        return <FinanceView expenses={expenses} onRefresh={refreshData} onNotify={showNotification} />;
+      case EggsView.HENS:
+        return <HensView hens={hens} onRefresh={refreshData} onNotify={showNotification} />;
+      case EggsView.GUIDE:
+        return <GuideView onNotify={showNotification} />;
+      default:
+        return <HomeView hens={hens} logs={logs} onRefresh={refreshData} onNotify={showNotification} onNavigate={setCurrentView} />;
+    }
+  };
 
   return (
+    /* Fill the pane completely */
     <div style={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      background: 'var(--bg)',
-      overflow: 'hidden',
+      position: 'absolute', inset: 0,
+      display: 'flex', flexDirection: 'column',
+      background: 'var(--bg)', overflow: 'hidden',
     }}>
-      <main style={{ flex: 1, overflowY: 'auto', paddingBottom: 'calc(var(--tab-h) + var(--safe-b))' }}>
-        {renderView()}
-      </main>
-      <Navigation
-        currentView={currentView}
-        onViewChange={v => { setCurrentView(v); refreshData(); }}
-      />
+      {/* Scrollable view content — leaves room for bottom nav */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentView}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22 }}
+            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+          >
+            {renderView()}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Bottom tab nav — pinned to bottom of THIS pane only */}
+      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+        <Navigation
+          currentView={currentView}
+          onViewChange={v => { setCurrentView(v); refreshData(); }}
+        />
+      </div>
+
+      {/* Toast notification */}
       <AnimatePresence>
         {notification && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               bottom: 'calc(var(--tab-h) + var(--safe-b) + 12px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 200,
-              width: '85%',
-              maxWidth: 300,
+              left: '50%', transform: 'translateX(-50%)',
+              zIndex: 200, width: '85%', maxWidth: 300,
             }}
           >
             <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '14px 18px',
-              borderRadius: 'var(--r-xl)',
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '14px 18px', borderRadius: 'var(--r-xl)',
               boxShadow: 'var(--sh3)',
               background: notification.type === 'success' ? 'var(--acc)' : 'var(--t1)',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 700,
+              color: '#fff', fontSize: 13, fontWeight: 700,
             }}>
               {notification.type === 'success' ? <CheckCircle size={16} /> : <Info size={16} />}
               {notification.message}
