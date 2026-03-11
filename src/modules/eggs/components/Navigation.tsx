@@ -1,6 +1,6 @@
 import React from 'react';
 import { Home, BarChart3, Wallet, Users, Utensils } from 'lucide-react';
-import { EggsView } from '../../../types/eggs';
+import { EggsView } from '@/types/eggs';
 import { motion } from 'framer-motion';
 
 interface NavigationProps {
@@ -18,8 +18,33 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
   ];
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-md z-[100] pointer-events-none">
-      <div className="bg-white/80 backdrop-blur-2xl border border-white/40 flex justify-around items-center h-20 px-2 rounded-[40px] shadow-[0_20px_60px_rgba(45,45,45,0.12)] pointer-events-auto">
+    <div style={{
+      width: '100%',
+      background: 'var(--bg)',
+      paddingBottom: 'var(--safe-b)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      paddingTop: 10,
+      paddingLeft: 12,
+      paddingRight: 12,
+      height: 'var(--tab-h)',
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: 420,
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: 40,
+        border: '1px solid rgba(255,255,255,0.4)',
+        boxShadow: '0 20px 60px rgba(45,45,45,0.12)',
+        height: 52,
+        padding: '0 4px',
+      }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = currentView === tab.id;
@@ -27,27 +52,51 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
             <button
               key={tab.id}
               onClick={() => onViewChange(tab.id)}
-              className="flex flex-col items-center justify-center relative flex-1 h-16 transition-transform active:scale-90"
+              style={{
+                flex: 1,
+                height: 44,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 3,
+                position: 'relative',
+                borderRadius: 32,
+                transition: 'transform 0.1s',
+              }}
             >
               {isActive && (
                 <motion.div
-                  layoutId="nav-glow"
-                  className="absolute inset-0 bg-[#D48C45]/10 rounded-3xl"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  layoutId="eggs-nav-bg"
+                  style={{
+                    position: 'absolute',
+                    inset: '0 2px',
+                    background: 'rgba(212,140,69,0.1)',
+                    borderRadius: 32,
+                    zIndex: 0,
+                  }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-              <div className={`transition-all duration-300 relative z-10 ${isActive ? 'text-[#D48C45]' : 'text-[#A0A0A0]'}`}>
+              <div style={{
+                color: isActive ? '#D48C45' : '#A0A0A0',
+                transition: 'color 0.2s',
+                position: 'relative',
+                zIndex: 1,
+              }}>
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span className={`text-[8px] font-bold uppercase tracking-[0.1em] relative z-10 mt-1.5 cn-relaxed ${isActive ? 'text-[#D48C45]' : 'text-[#A0A0A0]'}`}>
+              <span style={{
+                fontSize: 8,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: isActive ? '#D48C45' : '#A0A0A0',
+                position: 'relative',
+                zIndex: 1,
+              }}>
                 {tab.label}
               </span>
-              {isActive && (
-                <motion.div
-                  layoutId="nav-dot"
-                  className="absolute -bottom-1 w-1 h-1 bg-[#D48C45] rounded-full"
-                />
-              )}
             </button>
           );
         })}
