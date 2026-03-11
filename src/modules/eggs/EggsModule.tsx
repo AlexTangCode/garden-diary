@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Info } from 'lucide-react';
-import { EggsView, Hen, EggLog, Expense } from '../../../types/eggs';
-import { getHens, getEggLogs, getExpenses } from '../../../services/eggs.firebase';
+import { EggsView, Hen, EggLog, Expense } from '../../types/eggs';
+import { getHens, getEggLogs, getExpenses } from '../../services/eggs.firebase';
 
 // ── Views (copy your existing eggs-log views into modules/eggs/views/) ──
 // These imports will resolve once you migrate the view files in Phase 2.
