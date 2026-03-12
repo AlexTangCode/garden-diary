@@ -60,9 +60,9 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
     <div style={{
       position: 'absolute', inset: 0,
       display: 'flex', flexDirection: 'column',
-      background: 'var(--bg)', overflow: 'hidden',
+      overflow: 'hidden',
     }}>
-      {/* Header — hidden on map page (map has its own compact toolbar) */}
+      {/* Header — hidden on map page */}
       {page !== 'map' && (
         <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
           <Header page={page} onAction={() => {
@@ -72,12 +72,12 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
       )}
 
       {/* Page content */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0, background: 'var(--bg)' }}>
         {renderPage()}
       </div>
 
-      {/* Bottom nav */}
-      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative', background: 'linear-gradient(to bottom, transparent 0%, var(--bg) 35%)' }}>
+      {/* Bottom nav — no background, floats over transparent gap */}
+      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
         <BottomNav page={page} onNav={setPage} />
       </div>
 
