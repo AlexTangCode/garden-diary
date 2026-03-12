@@ -14,15 +14,18 @@ interface Props {
 const COLORS = ['#C8845A','#6BA368','#5A82A8','#A87CA0','#5A9E8C','#C05858','#8A9E5A','#9E7A5A'];
 const STATUSES: MarkerStatus[] = ['🌱 播种','🌿 生长','🌼 收获','✅ 完成'];
 
+// null = no active edit mode (map taps do nothing)
+// 'add' = tap to add/edit markers
+// 'move' = drag to reposition
+type EditMode = null | 'add' | 'move';
+
 export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef    = useRef<HTMLImageElement | null>(null);
   const fileRef   = useRef<HTMLInputElement>(null);
   const dragRef   = useRef<{ idx: number; offX: number; offY: number } | null>(null);
 
-  // ── isEditing: MUST be false by default. Map taps do nothing unless true ──
-  const [isEditing,   setIsEditing]   = useState(false);
-  const [isDragMode,  setIsDragMode]  = useState(false);
+  const [editMode,    setEditMode]    = useState<EditMode>(null);
   const [showAddPlot, setShowAddPlot] = useState(false);
   const [showMarker,  setShowMarker]  = useState(false);
   const [editMkId,    setEditMkId]    = useState<string | null>(null);
@@ -40,11 +43,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
   const pl     = plots.find(p => p.id === curPlot);
   const plotMk = markers.filter(m => m.plotId === curPlot);
 
-  useEffect(() => {
-    const handler = () => openAddPlot();
-    document.addEventListener('hdr-action', handler);
-    return () => document.removeEventListener('hdr-action', handler);
-  }, [plots]);
+  const today = () => new Date().toISOString().slice(0, 10);
 
   const redraw = useCallback(() => {
     const cv = canvasRef.current;
@@ -76,8 +75,8 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
       ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(lb, x, ly + 10); ctx.restore();
     });
-    // Editing mode border hint
-    if (isEditing) {
+    // edit mode dashed border hint
+    if (editMode) {
       ctx.save();
       ctx.strokeStyle = 'rgba(200,132,90,0.5)';
       ctx.lineWidth = 3;
@@ -85,7 +84,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
       ctx.strokeRect(2, 2, cv.width - 4, cv.height - 4);
       ctx.restore();
     }
-  }, [plotMk, pl, isEditing]);
+  }, [plotMk, pl, editMode]);
 
   useEffect(() => { redraw(); }, [redraw]);
 
@@ -125,11 +124,11 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
   };
 
   const onDown = (px: number, py: number) => {
-    // ── CORE: if not editing, do nothing at all ──
-    if (!isEditing) return;
+    // ── HARD GUARD: if not in edit mode, map taps do absolutely nothing ──
+    if (!editMode) return;
 
     const cv = canvasRef.current!;
-    if (!isDragMode) {
+    if (editMode === 'add') {
       const hit = hitTest(px, py);
       if (hit !== -1) {
         openMarker(plotMk[hit].id);
@@ -146,7 +145,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
   };
 
   const onMove = (px: number, py: number) => {
-    if (!isEditing || !isDragMode || !dragRef.current) return;
+    if (editMode !== 'move' || !dragRef.current) return;
     const cv = canvasRef.current!;
     const mk = plotMk[dragRef.current.idx];
     const nx = Math.max(0.01, Math.min(0.99, (px - dragRef.current.offX) / cv.width));
@@ -161,6 +160,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
     setPlotColor(COLORS[plots.length % COLORS.length]);
     setShowAddPlot(true);
   };
+
   const handleSavePlot = async () => {
     if (!plotName.trim()) return;
     const p: Plot = {
@@ -184,6 +184,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
     setEditMkId(id);
     setShowMarker(true);
   };
+
   const handleSaveMarker = async () => {
     if (!mkVeg.trim() || !curPlot) return;
     const base = {
@@ -198,6 +199,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
     }
     setShowMarker(false);
   };
+
   const handleDelMarker = async () => {
     if (!editMkId || !window.confirm('删除此标注？')) return;
     await deleteMarker(editMkId);
@@ -207,14 +209,19 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
   const handleImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f || !pl) return;
     const r = new FileReader();
-    r.onload = async ev => {
-      await savePlot({ ...pl, image: ev.target!.result as string });
-    };
+    r.onload = async ev => { await savePlot({ ...pl, image: ev.target!.result as string }); };
     r.readAsDataURL(f);
     e.target.value = '';
   };
 
-  const today = () => new Date().toISOString().slice(0, 10);
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    flex: 1, padding: '9px 0', borderRadius: 'var(--r-sm)',
+    fontSize: 13, fontWeight: 700, transition: 'all .18s',
+    background: active ? 'var(--acc)' : 'var(--card)',
+    color: active ? '#fff' : 'var(--t3)',
+    boxShadow: active ? '0 4px 14px rgba(200,132,90,.3)' : 'var(--sh)',
+    border: active ? 'none' : '1.5px solid var(--bg2)',
+  });
 
   return (
     <>
@@ -226,15 +233,15 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
         {/* Stats */}
         <div style={{
           background: 'var(--card)', borderRadius: 'var(--r-lg)',
-          margin: '14px 16px', display: 'flex', boxShadow: 'var(--sh)', overflow: 'hidden',
+          margin: '12px 16px', display: 'flex', boxShadow: 'var(--sh)', overflow: 'hidden',
         }}>
           {[{ label: '📍 菜地数', val: plots.length }, { label: '🌿 标注数', val: plotMk.length }].map((s, i) => (
             <div key={i} style={{
-              flex: 1, padding: '16px', textAlign: 'center',
+              flex: 1, padding: '14px', textAlign: 'center',
               ...(i > 0 ? { borderLeft: '1px solid rgba(44,32,24,.08)' } : {}),
             }}>
-              <div style={{ fontSize: 12, color: 'var(--acc)', fontWeight: 700, marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: 'var(--t1)' }}>{s.val}</div>
+              <div style={{ fontSize: 12, color: 'var(--acc)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: 'var(--t1)' }}>{s.val}</div>
             </div>
           ))}
         </div>
@@ -243,11 +250,16 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
           <div style={{ textAlign: 'center', padding: '64px 24px' }}>
             <div style={{ fontSize: 54 }}>🌱</div>
             <div style={{ fontSize: 18, fontWeight: 700, marginTop: 14 }}>还没有菜地</div>
-            <div style={{ fontSize: 14, color: 'var(--t2)', marginTop: 6 }}>点击右上角 ＋ 创建第一块菜地</div>
+            <div style={{ fontSize: 14, color: 'var(--t2)', marginTop: 6 }}>点击下方「＋ 添加菜地」开始</div>
+            <button onClick={openAddPlot} style={{
+              marginTop: 20, padding: '11px 28px', borderRadius: 'var(--r-xl)',
+              background: 'var(--acc)', color: '#fff', fontSize: 14, fontWeight: 700,
+              boxShadow: '0 4px 14px rgba(200,132,90,.35)',
+            }}>＋ 添加菜地</button>
           </div>
         ) : (
           <>
-            {/* Plot chips */}
+            {/* Plot chips — only one "+ 添加菜地" button here */}
             <div style={{ display: 'flex', gap: 8, padding: '4px 16px 8px', overflowX: 'auto' }}>
               {plots.map(p => (
                 <button key={p.id} onClick={() => setCurPlot(p.id)} style={{
@@ -262,6 +274,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
                   {p.name}
                 </button>
               ))}
+              {/* Single "添加菜地" button */}
               <button onClick={openAddPlot} style={{
                 flexShrink: 0, padding: '7px 14px', borderRadius: 20,
                 background: 'transparent', color: 'var(--acc)', fontSize: 13, fontWeight: 700,
@@ -269,50 +282,27 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
               }}>＋ 添加菜地</button>
             </div>
 
-            {/* Toolbar */}
+            {/* Edit mode toolbar — add/move always visible, grey when inactive */}
             <div style={{ display: 'flex', gap: 8, padding: '4px 16px 8px', alignItems: 'center' }}>
-              {!isEditing ? (
-                // ── Browse mode: single "enter edit" button ──
-                <button
-                  onClick={() => { setIsEditing(true); setIsDragMode(false); }}
-                  style={{
-                    flex: 1, padding: '9px 0', borderRadius: 'var(--r-sm)',
-                    fontSize: 13, fontWeight: 700,
-                    background: 'var(--card)', color: 'var(--acc)',
-                    boxShadow: 'var(--sh)', border: '1.5px solid var(--acc2)',
-                  }}
-                >
-                  ✏️ 进入编辑模式
-                </button>
-              ) : (
-                // ── Edit mode controls ──
-                <>
-                  <button onClick={() => setIsDragMode(false)} style={{
-                    flex: 1, padding: '9px 0', borderRadius: 'var(--r-sm)',
-                    fontSize: 13, fontWeight: 700, transition: 'all .18s',
-                    background: !isDragMode ? 'var(--acc)' : 'var(--card)',
-                    color: !isDragMode ? '#fff' : 'var(--t2)',
-                    boxShadow: !isDragMode ? '0 4px 14px rgba(200,132,90,.3)' : 'var(--sh)',
-                  }}>✚ 添加标注</button>
-                  <button onClick={() => setIsDragMode(true)} style={{
-                    flex: 1, padding: '9px 0', borderRadius: 'var(--r-sm)',
-                    fontSize: 13, fontWeight: 700, transition: 'all .18s',
-                    background: isDragMode ? 'var(--acc)' : 'var(--card)',
-                    color: isDragMode ? '#fff' : 'var(--t2)',
-                    boxShadow: isDragMode ? '0 4px 14px rgba(200,132,90,.3)' : 'var(--sh)',
-                  }}>⤢ 移动</button>
-                  <button onClick={() => fileRef.current?.click()} style={{ width: 40, borderRadius: 'var(--r-sm)', background: 'var(--card)', boxShadow: 'var(--sh)', fontSize: 17 }}>🖼</button>
-                  <button onClick={async () => {
-                    if (!plotMk.length || !window.confirm('清空所有标注？')) return;
-                    for (const m of plotMk) await deleteMarker(m.id);
-                  }} style={{ width: 40, borderRadius: 'var(--r-sm)', background: 'var(--card)', boxShadow: 'var(--sh)', fontSize: 17, color: 'var(--red)' }}>🗑</button>
-                  <button onClick={() => setIsEditing(false)} style={{
-                    padding: '9px 10px', borderRadius: 'var(--r-sm)',
-                    background: 'var(--red-l)', color: 'var(--red)',
-                    fontSize: 12, fontWeight: 700, boxShadow: 'var(--sh)',
-                  }}>退出</button>
-                </>
-              )}
+              <button onClick={() => setEditMode(m => m === 'add' ? null : 'add')} style={btnStyle(editMode === 'add')}>
+                ✚ 添加标注
+              </button>
+              <button onClick={() => setEditMode(m => m === 'move' ? null : 'move')} style={btnStyle(editMode === 'move')}>
+                ⤢ 移动
+              </button>
+              <button onClick={() => fileRef.current?.click()} style={{
+                width: 40, height: 40, borderRadius: 'var(--r-sm)',
+                background: 'var(--card)', boxShadow: 'var(--sh)', fontSize: 17,
+                border: '1.5px solid var(--bg2)',
+              }}>🖼</button>
+              <button onClick={async () => {
+                if (!plotMk.length || !window.confirm('清空所有标注？')) return;
+                for (const m of plotMk) await deleteMarker(m.id);
+              }} style={{
+                width: 40, height: 40, borderRadius: 'var(--r-sm)',
+                background: 'var(--card)', boxShadow: 'var(--sh)', fontSize: 17,
+                color: 'var(--red)', border: '1.5px solid var(--bg2)',
+              }}>🗑</button>
             </div>
 
             {/* Canvas */}
@@ -332,26 +322,27 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
                   ref={canvasRef}
                   style={{
                     display: 'block', width: '100%',
-                    cursor: !isEditing ? 'default' : isDragMode ? 'grab' : 'crosshair',
+                    cursor: editMode === null ? 'default' : editMode === 'move' ? 'grab' : 'crosshair',
                   }}
                   onMouseDown={e => { const p = getPos(e.clientX, e.clientY); onDown(p.x, p.y); }}
                   onMouseMove={e => { const p = getPos(e.clientX, e.clientY); onMove(p.x, p.y); }}
                   onMouseUp={onUp}
-                  onTouchStart={e => { e.preventDefault(); const t = e.touches[0]; onDown(...Object.values(getPos(t.clientX, t.clientY)) as [number,number]); }}
-                  onTouchMove={e  => { e.preventDefault(); const t = e.touches[0]; onMove(...Object.values(getPos(t.clientX, t.clientY)) as [number,number]); }}
+                  onTouchStart={e => { e.preventDefault(); const t = e.touches[0]; const p = getPos(t.clientX, t.clientY); onDown(p.x, p.y); }}
+                  onTouchMove={e  => { e.preventDefault(); const t = e.touches[0]; const p = getPos(t.clientX, t.clientY); onMove(p.x, p.y); }}
                   onTouchEnd={onUp}
                 />
               </div>
             )}
-            {/* ✅ "已标注X个位置" text: REMOVED */}
-            {/* ✅ "删除菜地" link: REMOVED     */}
+            {/* ✅ REMOVED: "已标注X个位置" text */}
+            {/* ✅ REMOVED: "删除菜地" danger link  */}
           </>
         )}
-        <div style={{ height: 20 }} />
+        <div style={{ height: 16 }} />
       </div>
 
       <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImg} />
 
+      {/* Sheet: Add Plot */}
       <Sheet open={showAddPlot} onClose={() => setShowAddPlot(false)} title="添加菜地"
         footer={<BtnRow><Btn variant="secondary" onClick={() => setShowAddPlot(false)}>取消</Btn><Btn onClick={handleSavePlot}>创建菜地</Btn></BtnRow>}
       >
@@ -373,6 +364,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
         </FormField>
       </Sheet>
 
+      {/* Sheet: Marker */}
       <Sheet open={showMarker} onClose={() => setShowMarker(false)} title={editMkId ? '编辑标注' : '添加标注'}
         footer={
           <BtnRow>
