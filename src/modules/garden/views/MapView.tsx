@@ -272,20 +272,24 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
         overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
         paddingBottom: 16,
       }}>
-        {/* ── Page header — same style as Chloe's Chicken ── */}
+        {/* ── Page header — pixel-identical to Chloe's Chicken ── */}
         <header style={{
-          paddingTop: 36, paddingBottom: 12,
-          paddingLeft: 24, paddingRight: 24,
+          paddingTop: 40, paddingBottom: 16,        /* pt-10 pb-4 */
+          paddingLeft: 40, paddingRight: 40,         /* px-10 */
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative', zIndex: 20,
         }}>
-          <span style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize: 22, fontWeight: 800, letterSpacing: '0.12em',
-            color: 'var(--acc)', opacity: 0.85,
+          <h2 style={{
+            fontFamily: 'Georgia, "Times New Roman", serif', /* font-serif */
+            fontSize: 20,                                     /* text-xl */
+            fontWeight: 800,                                  /* font-extrabold */
+            letterSpacing: '0.15em',                         /* tracking-[0.15em] */
+            color: '#D48C45',                                 /* text-[#D48C45] */
+            opacity: 0.6,                                     /* opacity-60 */
+            margin: 0,
           }}>
             Yi's Garden
-          </span>
+          </h2>
         </header>
 
         {/* Stats */}
