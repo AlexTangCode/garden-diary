@@ -57,25 +57,26 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
-    /* Fill the pane completely */
     <div style={{
       position: 'absolute', inset: 0,
       display: 'flex', flexDirection: 'column',
       background: 'var(--bg)', overflow: 'hidden',
     }}>
-      {/* Header — pinned to top of THIS pane only */}
-      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
-        <Header page={page} onAction={() => {
-          document.dispatchEvent(new CustomEvent('hdr-action'));
-        }} />
-      </div>
+      {/* Header — hidden on map page (map has its own compact toolbar) */}
+      {page !== 'map' && (
+        <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+          <Header page={page} onAction={() => {
+            document.dispatchEvent(new CustomEvent('hdr-action'));
+          }} />
+        </div>
+      )}
 
-      {/* Scrollable page content */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* Page content */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
         {renderPage()}
       </div>
 
-      {/* Bottom nav — pinned to bottom of THIS pane only */}
+      {/* Bottom nav */}
       <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
         <BottomNav page={page} onNav={setPage} />
       </div>
@@ -89,7 +90,7 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
             exit={{ opacity: 0, scale: 0.95 }}
             style={{
               position: 'absolute',
-              bottom: 'calc(var(--tab-h) + var(--safe-b) + 12px)',
+              bottom: 'calc(var(--tab-h) + 12px)',
               left: '50%', transform: 'translateX(-50%)',
               zIndex: 200, width: '85%', maxWidth: 300,
             }}
