@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Calendar, Pencil, Trash2, Check, X } from 'lucide-react';
 import type { Marker, Plot, MarkerStatus } from '../../../types/garden';
 import { saveMarker, deleteMarker } from '../../../services/garden.firebase';
 
@@ -15,13 +16,28 @@ const STATUS_STYLE: Record<MarkerStatus, { color: string; bg: string }> = {
   '✅ 完成': { color: 'var(--blue)',  bg: 'var(--blue-l)'  },
 };
 
+const STATUS_EMOJI: Record<MarkerStatus, string> = {
+  '🌱 播种': '🌱',
+  '🌿 生长': '🌿',
+  '🌼 收获': '🌼',
+  '✅ 完成': '✅',
+};
+
 const STATUSES: MarkerStatus[] = ['🌱 播种', '🌿 生长', '🌼 收获', '✅ 完成'];
 
+const selStyle: React.CSSProperties = {
+  padding: '8px 14px',
+  background: 'var(--card)', border: 'none', borderRadius: 20,
+  fontFamily: 'var(--ff)', fontSize: 13, fontWeight: 600,
+  color: 'var(--t1)', boxShadow: 'var(--sh)',
+  cursor: 'pointer', outline: 'none', WebkitAppearance: 'none',
+};
+
 export default function MarkersListView({ markers, plots }: Props) {
-  const [filterPlot, setFilterPlot] = useState('');
+  const [filterPlot,   setFilterPlot]   = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editStatus, setEditStatus] = useState<MarkerStatus>('🌱 播种');
+  const [editingId,    setEditingId]    = useState<string | null>(null);
+  const [editStatus,   setEditStatus]   = useState<MarkerStatus>('🌱 播种');
 
   const pn = (id: string) => plots.find(p => p.id === id)?.name ?? '未知菜地';
 
@@ -30,10 +46,7 @@ export default function MarkersListView({ markers, plots }: Props) {
     (!filterStatus || m.status === filterStatus)
   );
 
-  const openEdit = (m: Marker) => {
-    setEditingId(m.id);
-    setEditStatus(m.status);
-  };
+  const openEdit = (m: Marker) => { setEditingId(m.id); setEditStatus(m.status); };
 
   const handleUpdateStatus = async (m: Marker) => {
     await saveMarker({ ...m, status: editStatus });
@@ -45,27 +58,11 @@ export default function MarkersListView({ markers, plots }: Props) {
     await deleteMarker(id);
   };
 
-  const selStyle: React.CSSProperties = {
-    padding: '7px 12px',
-    background: 'var(--card)',
-    border: 'none',
-    borderRadius: 'var(--r-xl)',
-    fontFamily: 'var(--ff)',
-    fontSize: 12,
-    fontWeight: 600,
-    color: 'var(--t1)',
-    boxShadow: 'var(--sh)',
-    cursor: 'pointer',
-    outline: 'none',
-  };
-
   return (
     <div style={{
       position: 'absolute', inset: 0,
-      overflowY: 'auto',
-      WebkitOverflowScrolling: 'touch',
-      paddingBottom: 'calc(var(--tab-h) + var(--safe-b) + 16px)',
-      animation: 'pgIn .25s ease',
+      overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
+      paddingBottom: 16, animation: 'pgIn .25s ease',
     }}>
       {/* Filters */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 16px', flexWrap: 'wrap' }}>
@@ -84,29 +81,26 @@ export default function MarkersListView({ markers, plots }: Props) {
         )}
       </div>
 
-      {/* Summary badge */}
+      {/* Summary */}
       <div style={{ padding: '0 16px 12px' }}>
         <span style={{
-          display: 'inline-block',
-          padding: '4px 12px',
-          background: 'var(--acc-bg)',
-          color: 'var(--acc)',
-          borderRadius: 'var(--r-xl)',
-          fontSize: 12,
-          fontWeight: 700,
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          padding: '5px 14px', background: 'var(--acc-bg)',
+          color: 'var(--acc)', borderRadius: 999, fontSize: 12, fontWeight: 700,
         }}>
+          <MapPin size={12} strokeWidth={2.5} />
           共 {filtered.length} 个标注
         </span>
       </div>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div style={{
-          textAlign: 'center', padding: '60px 20px',
-          color: 'var(--t3)', fontSize: 14,
-        }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📍</div>
-          暂无标注
+        <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <MapPin size={40} strokeWidth={1.5} color="var(--t4)" />
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--t1)' }}>暂无标注</div>
+          <div style={{ fontSize: 14, color: 'var(--t2)', marginTop: 6 }}>在地图页添加标注后显示在这里</div>
         </div>
       ) : (
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -121,50 +115,39 @@ export default function MarkersListView({ markers, plots }: Props) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   style={{
-                    background: 'var(--card)',
-                    borderRadius: 'var(--r-md)',
-                    padding: '14px 16px',
-                    boxShadow: 'var(--sh)',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 12,
+                    background: 'var(--card)', borderRadius: 'var(--r-lg)',
+                    boxShadow: 'var(--sh)', overflow: 'hidden',
+                    display: 'flex', alignItems: 'stretch',
                   }}
                 >
-                  {/* Status dot */}
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 'var(--r-sm)',
-                    background: st.bg, display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: 18, flexShrink: 0,
-                  }}>
-                    {m.status.split(' ')[0]}
+                  {/* Status stripe */}
+                  <div style={{ width: 4, background: st.color, flexShrink: 0 }} />
+
+                  {/* Status emoji badge */}
+                  <div style={{ width: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 12, background: st.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>
+                      {STATUS_EMOJI[m.status]}
+                    </div>
                   </div>
 
                   {/* Info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                  <div style={{ flex: 1, padding: '14px 0', minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
                       <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)' }}>{m.name}</span>
-                      {m.variety && (
-                        <span style={{ fontSize: 11, color: 'var(--t2)', fontWeight: 500 }}>({m.variety})</span>
-                      )}
+                      {m.variety && <span style={{ fontSize: 11, color: 'var(--t2)', fontWeight: 500 }}>({m.variety})</span>}
                     </div>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{
-                        fontSize: 11, padding: '2px 8px',
-                        borderRadius: 'var(--r-xl)',
-                        background: st.bg, color: st.color, fontWeight: 600,
-                      }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 999, background: st.bg, color: st.color, fontWeight: 700 }}>
                         {m.status}
                       </span>
-                      <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
-                        📍 {pn(m.plotId)}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>
+                        <MapPin size={10} /> {pn(m.plotId)}
                       </span>
-                      <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
-                        📅 {m.date}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>
+                        <Calendar size={10} /> {m.date}
                       </span>
                     </div>
-                    {m.note && (
-                      <p style={{ fontSize: 12, color: 'var(--t2)', marginTop: 6 }}>{m.note}</p>
-                    )}
+                    {m.note && <p style={{ fontSize: 12, color: 'var(--t2)', marginTop: 6, lineHeight: 1.5 }}>{m.note}</p>}
 
                     {/* Inline status editor */}
                     {isEditing && (
@@ -172,36 +155,43 @@ export default function MarkersListView({ markers, plots }: Props) {
                         {STATUSES.map(s => (
                           <button key={s} onClick={() => setEditStatus(s)} style={{
                             padding: '5px 10px', fontSize: 11, fontWeight: 600,
-                            borderRadius: 'var(--r-xl)',
+                            borderRadius: 999,
                             background: editStatus === s ? 'var(--acc)' : 'var(--bg)',
                             color: editStatus === s ? '#fff' : 'var(--t2)',
                             transition: 'all .15s',
                           }}>{s}</button>
                         ))}
                         <button onClick={() => handleUpdateStatus(m)} style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
                           padding: '5px 12px', fontSize: 11, fontWeight: 700,
-                          borderRadius: 'var(--r-xl)',
-                          background: 'var(--green)', color: '#fff',
-                        }}>保存</button>
+                          borderRadius: 999, background: 'var(--green)', color: '#fff',
+                        }}><Check size={12} /> 保存</button>
                         <button onClick={() => setEditingId(null)} style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
                           padding: '5px 10px', fontSize: 11, fontWeight: 600,
-                          borderRadius: 'var(--r-xl)', color: 'var(--t3)',
-                        }}>取消</button>
+                          borderRadius: 999, color: 'var(--t3)', background: 'var(--bg)',
+                        }}><X size={12} /> 取消</button>
                       </div>
                     )}
                   </div>
 
-                  {/* Actions */}
+                  {/* Action buttons */}
                   {!isEditing && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center', justifyContent: 'center' }}>
                       <button onClick={() => openEdit(m)} style={{
-                        width: 30, height: 30, borderRadius: 'var(--r-sm)',
-                        background: 'var(--bg)', color: 'var(--t2)', fontSize: 14,
-                      }}>✏️</button>
+                        width: 32, height: 32, borderRadius: 10,
+                        background: 'var(--bg)', color: 'var(--t2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <Pencil size={14} strokeWidth={2} />
+                      </button>
                       <button onClick={() => handleDelete(m.id)} style={{
-                        width: 30, height: 30, borderRadius: 'var(--r-sm)',
-                        background: 'var(--red-l)', color: 'var(--red)', fontSize: 14,
-                      }}>🗑</button>
+                        width: 32, height: 32, borderRadius: 10,
+                        background: 'var(--red-l)', color: 'var(--red)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <Trash2 size={14} strokeWidth={2} />
+                      </button>
                     </div>
                   )}
                 </motion.div>
@@ -210,6 +200,7 @@ export default function MarkersListView({ markers, plots }: Props) {
           </AnimatePresence>
         </div>
       )}
+      <div style={{ height: 16 }} />
     </div>
   );
 }
