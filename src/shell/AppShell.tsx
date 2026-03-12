@@ -16,49 +16,50 @@ const AppShell: React.FC = () => {
   const { logout } = useAuth();
   const [activeModule, setActiveModule] = useState<ModuleId>('eggs');
 
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  // ── Swipe only registers on the ModuleNav bar itself ──
+  // We expose a ref to the nav bar and only start tracking if touch
+  // begins inside it.
+  const navRef        = useRef<HTMLDivElement>(null);
+  const touchStartX   = useRef<number | null>(null);
+  const touchOriginEl = useRef<EventTarget | null>(null);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
+  const handleNavTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current   = e.touches[0].clientX;
+    touchOriginEl.current = e.target;
   }, []);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartX.current === null || touchStartY.current === null) return;
+  const handleNavTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = e.changedTouches[0].clientY - touchStartY.current;
-    touchStartX.current = null;
-    touchStartY.current = null;
-    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+    touchStartX.current   = null;
+    touchOriginEl.current = null;
+    if (Math.abs(dx) < 50) return;
     if (dx < 0 && activeModule === 'eggs')   setActiveModule('garden');
     if (dx > 0 && activeModule === 'garden') setActiveModule('eggs');
   }, [activeModule]);
 
   return (
     <div style={{
-      /* Full viewport — no overflow */
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      background: 'var(--bg)',
-      overflow: 'hidden',
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      display: 'flex', flexDirection: 'column',
+      background: 'var(--bg)', overflow: 'hidden',
     }}>
-      {/* ── Top nav: fixed height ── */}
-      <ModuleNav
-        modules={MODULES}
-        active={activeModule}
-        onSwitch={setActiveModule}
-        onLogout={logout}
-      />
-
-      {/* ── Content: fills remaining space, never overflows ── */}
+      {/* ── Top nav: swipe HERE to switch modules ── */}
       <div
-        style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        ref={navRef}
+        onTouchStart={handleNavTouchStart}
+        onTouchEnd={handleNavTouchEnd}
       >
+        <ModuleNav
+          modules={MODULES}
+          active={activeModule}
+          onSwitch={setActiveModule}
+          onLogout={logout}
+        />
+      </div>
+
+      {/* ── Content: NO swipe listener here — preserves inner scrolls & gestures ── */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
         {activeModule === 'eggs' ? (
           <motion.div
             key="eggs"
