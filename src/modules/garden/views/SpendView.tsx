@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BookOpen, X, Calendar, MapPin, DollarSign, Tag } from 'lucide-react';
 import type { Plot, SpendLog, SpendCategory } from '../../../types/garden';
 import { saveSpend, deleteSpend, newId } from '../../../services/garden.firebase';
 import Sheet from '../components/Sheet';
@@ -14,17 +15,13 @@ const CATS: SpendCategory[] = [
   '🌱 种子/种苗', '💊 农药/肥料', '🔧 工具/设备', '💧 水电', '📦 其他',
 ];
 const today = () => new Date().toISOString().slice(0, 10);
+
 const selStyle: React.CSSProperties = {
   flexShrink: 0, padding: '8px 14px',
   background: 'var(--card)', border: 'none', borderRadius: 20,
   fontFamily: 'var(--ff)', fontSize: 13, fontWeight: 600,
   color: 'var(--t1)', WebkitAppearance: 'none', outline: 'none',
   cursor: 'pointer', boxShadow: 'var(--sh)',
-};
-const lcStyle: React.CSSProperties = {
-  background: 'var(--card)', borderRadius: 'var(--r-md)',
-  margin: '0 16px 10px', display: 'flex', alignItems: 'stretch',
-  boxShadow: 'var(--sh)', overflow: 'hidden',
 };
 
 export default function SpendView({ plots, spends, curPlot }: Props) {
@@ -67,8 +64,9 @@ export default function SpendView({ plots, spends, curPlot }: Props) {
 
   return (
     <>
-      <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(88px + var(--safe-b) + 16px)', animation: 'pgIn .25s ease' }}>
-        <div style={{ display: 'flex', gap: 8, padding: '8px 16px 12px', overflowX: 'auto' }}>
+      <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 16, animation: 'pgIn .25s ease' }}>
+        {/* Filters */}
+        <div style={{ display: 'flex', gap: 8, padding: '12px 16px', overflowX: 'auto' }}>
           <select value={fp} onChange={e => setFp(e.target.value)} style={selStyle}>
             <option value="">所有菜地</option>
             {plots.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -80,40 +78,79 @@ export default function SpendView({ plots, spends, curPlot }: Props) {
           <input type="month" value={fm} onChange={e => setFm(e.target.value)} style={selStyle} />
         </div>
 
+        {/* Total banner */}
         {filtered.length > 0 && (
-          <div style={{ background: 'var(--red-l)', borderRadius: 'var(--r-md)', margin: '0 16px 12px', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--red)' }}>💰 合计支出</span>
+          <div style={{
+            margin: '0 16px 14px', padding: '16px 20px',
+            background: 'var(--red-l)', borderRadius: 'var(--r-lg)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(192,88,88,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <DollarSign size={18} strokeWidth={2} color="var(--red)" />
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--red)' }}>合计支出</span>
+            </div>
             <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--red)', letterSpacing: '-.8px' }}>¥{total.toFixed(2)}</span>
           </div>
         )}
 
+        {/* List */}
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '64px 24px' }}>
-            <div style={{ fontSize: 54 }}>📒</div>
-            <div style={{ fontSize: 18, fontWeight: 700, marginTop: 14 }}>暂无支出记录</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <BookOpen size={40} strokeWidth={1.5} color="var(--t4)" />
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--t1)' }}>暂无支出记录</div>
             <div style={{ fontSize: 14, color: 'var(--t2)', marginTop: 6 }}>记录每一笔菜园投入</div>
           </div>
         ) : (
-          filtered.map(s => (
-            <div key={s.id} style={{ ...lcStyle, animation: 'slideUp .22s ease' }}>
-              <div style={{ width: 4, background: 'var(--red)', flexShrink: 0 }} />
-              <div style={{ flex: 1, padding: '14px', minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.cat} {s.item}</div>
-                <div style={{ fontSize: 12, color: 'var(--t2)', marginTop: 3 }}>{pn(s.plotId)}{pn(s.plotId) && s.note ? ' · ' : ''}{s.note}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px' }}>
+            {filtered.map(s => (
+              <div key={s.id} style={{
+                background: 'var(--card)', borderRadius: 'var(--r-lg)',
+                boxShadow: 'var(--sh)', overflow: 'hidden',
+                display: 'flex', alignItems: 'stretch',
+              }}>
+                <div style={{ width: 4, background: 'var(--red)', flexShrink: 0 }} />
+                <div style={{ width: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 12, background: 'var(--red-l)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Tag size={16} strokeWidth={2} color="var(--red)" />
+                  </div>
+                </div>
+                <div style={{ flex: 1, padding: '14px 0', minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.item}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>{s.cat}</span>
+                    {pn(s.plotId) && (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>
+                        <MapPin size={10} /> {pn(s.plotId)}
+                      </span>
+                    )}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>
+                      <Calendar size={10} /> {s.date}
+                    </span>
+                  </div>
+                </div>
+                <div style={{ padding: '14px 12px', textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--red)' }}>¥{s.amt.toFixed(2)}</div>
+                  <button onClick={() => deleteSpend(s.id)} style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--t3)',
+                  }}>
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                </div>
               </div>
-              <div style={{ padding: '14px', textAlign: 'right', flexShrink: 0 }}>
-                <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--red)' }}>¥{s.amt.toFixed(2)}</div>
-                <div style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500, marginTop: 2 }}>{s.date}</div>
-              </div>
-              <button onClick={() => deleteSpend(s.id)} style={{ padding: '0 14px', color: 'var(--t3)', fontSize: 16, display: 'flex', alignItems: 'center' }}>✕</button>
-            </div>
-          ))
+            ))}
+          </div>
         )}
-        <div style={{ height: 20 }} />
+        <div style={{ height: 16 }} />
       </div>
 
-      <Sheet open={open} onClose={() => setOpen(false)} title="📒 记录支出"
-        footer={<BtnRow><Btn variant="secondary" onClick={() => setOpen(false)}>取消</Btn><Btn color="var(--red)" onClick={handleSave}>记录支出</Btn></BtnRow>}
+      <Sheet open={open} onClose={() => setOpen(false)} title="记录支出"
+        footer={<BtnRow><Btn variant="secondary" onClick={() => setOpen(false)}>取消</Btn><Btn onClick={handleSave}>记录支出</Btn></BtnRow>}
       >
         <FormField label="菜地">
           <select style={inputStyle} value={sPlot} onChange={e => setSPlot(e.target.value)}>
