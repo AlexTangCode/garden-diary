@@ -18,30 +18,30 @@ interface Props {
 
 export default function BottomNav({ page, onNav }: Props) {
   return (
+    /* Outer wrapper: same padding structure as eggs Navigation */
     <div style={{
       width: '100%',
       background: 'var(--bg)',
-      paddingBottom: 'var(--safe-b)',
+      flexShrink: 0,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: '10px 16px',
-      height: 'var(--tab-h)',
-      flexShrink: 0,
+      padding: '12px 16px calc(16px + var(--safe-b))',
     }}>
+      {/* Pill */}
       <nav style={{
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
         width: '100%',
-        maxWidth: 420,
-        background: 'rgba(255,255,255,0.88)',
+        maxWidth: 440,
+        background: 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderRadius: 40,
-        border: '1px solid rgba(255,255,255,0.4)',
-        boxShadow: '0 6px 28px rgba(44,32,24,.11)',
-        height: 58,          /* taller pill */
+        borderRadius: 999,
+        border: '1px solid rgba(255,255,255,0.5)',
+        boxShadow: '0 8px 32px rgba(44,32,24,.13)',
+        height: 64,
         padding: '0 6px',
       }}>
         {ITEMS.map(item => {
@@ -52,10 +52,10 @@ export default function BottomNav({ page, onNav }: Props) {
               key={item.id}
               onClick={() => onNav(item.id)}
               style={{
-                flex: 1, height: 50,   /* taller tap target */
+                flex: 1, height: 56,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 4, position: 'relative', borderRadius: 32,
+                gap: 4, position: 'relative', borderRadius: 999,
               }}
             >
               {active && (
@@ -63,8 +63,8 @@ export default function BottomNav({ page, onNav }: Props) {
                   layoutId="garden-nav-bg"
                   style={{
                     position: 'absolute', inset: '0 2px',
-                    background: 'rgba(200,132,90,0.1)',
-                    borderRadius: 32, zIndex: 0,
+                    background: 'rgba(200,132,90,0.12)',
+                    borderRadius: 999, zIndex: 0,
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
