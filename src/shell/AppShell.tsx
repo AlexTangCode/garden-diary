@@ -37,14 +37,15 @@ const AppShell: React.FC = () => {
 
   return (
     <div style={{
+      /* Full viewport — no overflow */
       position: 'fixed',
-      inset: 0,
+      top: 0, left: 0, right: 0, bottom: 0,
       display: 'flex',
       flexDirection: 'column',
       background: 'var(--bg)',
       overflow: 'hidden',
     }}>
-      {/* ── ONE global top nav ── */}
+      {/* ── Top nav: fixed height ── */}
       <ModuleNav
         modules={MODULES}
         active={activeModule}
@@ -52,20 +53,18 @@ const AppShell: React.FC = () => {
         onLogout={logout}
       />
 
-      {/* ── Content area ── */}
+      {/* ── Content: fills remaining space, never overflows ── */}
       <div
-        style={{ flex: 1, overflow: 'hidden', position: 'relative' }}
+        style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Conditionally render — inactive module is fully unmounted */}
         {activeModule === 'eggs' ? (
           <motion.div
             key="eggs"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.22 }}
             style={{ position: 'absolute', inset: 0 }}
           >
             <EggsModule isActive={true} />
@@ -75,35 +74,12 @@ const AppShell: React.FC = () => {
             key="garden"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.22 }}
             style={{ position: 'absolute', inset: 0 }}
           >
             <GardenModule isActive={true} />
           </motion.div>
         )}
-      </div>
-
-      {/* ── Swipe indicator dots ── */}
-      <div style={{
-        position: 'absolute',
-        bottom: 'calc(var(--tab-h) + 8px)',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        gap: 5,
-        zIndex: 200,
-        pointerEvents: 'none',
-      }}>
-        {MODULES.map((m) => (
-          <div key={m.id} style={{
-            width:  m.id === activeModule ? 16 : 5,
-            height: 5,
-            borderRadius: 3,
-            background: m.id === activeModule ? 'var(--acc)' : 'var(--t4)',
-            transition: 'all 0.3s ease',
-          }} />
-        ))}
       </div>
     </div>
   );
