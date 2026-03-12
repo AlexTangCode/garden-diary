@@ -18,30 +18,31 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
   ];
 
   return (
+    /* Outer wrapper: full-width strip with breathing room on all sides */
     <div style={{
       width: '100%',
       background: 'var(--bg)',
-      paddingBottom: 'var(--safe-b)',
+      flexShrink: 0,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: '10px 16px',
-      height: 'var(--tab-h)',
-      flexShrink: 0,
+      /* 12px gap above pill, 16px gap below + safe area */
+      padding: '12px 16px calc(16px + var(--safe-b))',
     }}>
+      {/* Pill */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
         width: '100%',
-        maxWidth: 420,
-        background: 'rgba(255,255,255,0.88)',
+        maxWidth: 440,
+        background: 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderRadius: 40,
-        border: '1px solid rgba(255,255,255,0.4)',
-        boxShadow: '0 6px 28px rgba(44,32,24,.11)',
-        height: 58,          /* taller pill */
+        borderRadius: 999,
+        border: '1px solid rgba(255,255,255,0.5)',
+        boxShadow: '0 8px 32px rgba(44,32,24,.13)',
+        height: 64,        /* tall enough to tap comfortably */
         padding: '0 6px',
       }}>
         {tabs.map((tab) => {
@@ -52,10 +53,11 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
               key={tab.id}
               onClick={() => onViewChange(tab.id)}
               style={{
-                flex: 1, height: 50,   /* taller tap target */
+                flex: 1,
+                height: 56,        /* large tap target */
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 4, position: 'relative', borderRadius: 32,
+                gap: 4, position: 'relative', borderRadius: 999,
               }}
             >
               {isActive && (
@@ -63,8 +65,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                   layoutId="eggs-nav-bg"
                   style={{
                     position: 'absolute', inset: '0 2px',
-                    background: 'rgba(200,132,90,0.1)',
-                    borderRadius: 32, zIndex: 0,
+                    background: 'rgba(200,132,90,0.12)',
+                    borderRadius: 999, zIndex: 0,
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
