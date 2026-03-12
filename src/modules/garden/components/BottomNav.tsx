@@ -24,7 +24,6 @@ export default function BottomNav({ page, onNav }: Props) {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      /* No background — pill floats over page */
       padding: '10px 16px',
       paddingBottom: 'calc(14px + var(--safe-b))',
     }}>
