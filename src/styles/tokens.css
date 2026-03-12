@@ -1,7 +1,8 @@
-/* ── Global reset ─────────────────────────────────────────── */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Global reset ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root {
@@ -27,29 +28,22 @@ input, textarea, select {
 
 /* ── Design tokens ─────────────────────────────────────────── */
 :root {
-  /* Font */
   --ff: -apple-system, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
 
-  /* Background */
   --bg:     #F0EBE3;
   --bg2:    #E8E1D8;
-
-  /* Card */
   --card:   #FFFFFF;
   --card2:  #FAFAF8;
 
-  /* Text */
   --t1: #2C2018;
   --t2: #8C7B6E;
   --t3: #B8A898;
   --t4: #D4CBBD;
 
-  /* Accent */
   --acc:    #C8845A;
   --acc2:   #E5A876;
   --acc-bg: #FAF0E8;
 
-  /* Semantic colours */
   --green:   #6BA368;
   --green-l: #EEF6EE;
   --red:     #C05858;
@@ -59,20 +53,23 @@ input, textarea, select {
   --teal:    #5A9E8C;
   --teal-l:  #EBF6F3;
 
-  /* Radii */
   --r-sm: 10px;
   --r-md: 18px;
   --r-lg: 24px;
   --r-xl: 32px;
 
-  /* Shadows */
   --sh:  0 2px 12px rgba(44,32,24,.07);
   --sh2: 0 6px 28px rgba(44,32,24,.11);
   --sh3: 0 16px 48px rgba(44,32,24,.16);
 
-  /* Layout */
-  --nav-h:  56px;
-  --tab-h:  64px;
+  /* Layout — tab-h is the ONLY bottom nav height var used everywhere */
+  --nav-h:  52px;   /* top ModuleNav height */
+  --tab-h:  64px;   /* bottom nav pill height */
   --safe-t: env(safe-area-inset-top,    0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes pgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
