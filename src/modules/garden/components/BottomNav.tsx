@@ -4,11 +4,11 @@ import { Home, Leaf, BookOpen, BarChart3, MapPin } from 'lucide-react';
 import type { GardenPageId } from '@/types/garden';
 
 const ITEMS: { id: GardenPageId; icon: React.ElementType; label: string }[] = [
-  { id: 'map',     icon: Home,     label: '地图' },
-  { id: 'harvest', icon: Leaf,     label: '采摘' },
-  { id: 'spend',   icon: BookOpen, label: '支出' },
-  { id: 'stats',   icon: BarChart3,label: '统计' },
-  { id: 'markers', icon: MapPin,   label: '标注' },
+  { id: 'map',     icon: Home,      label: '地图' },
+  { id: 'harvest', icon: Leaf,      label: '采摘' },
+  { id: 'spend',   icon: BookOpen,  label: '支出' },
+  { id: 'stats',   icon: BarChart3, label: '统计' },
+  { id: 'markers', icon: MapPin,    label: '标注' },
 ];
 
 interface Props {
@@ -24,8 +24,10 @@ export default function BottomNav({ page, onNav }: Props) {
       paddingBottom: 'var(--safe-b)',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'flex-start',
+      alignItems: 'center',          /* vertically centre the pill */
       paddingTop: 8,
+      paddingLeft: 16,
+      paddingRight: 16,
       height: 'var(--tab-h)',
       flexShrink: 0,
     }}>
@@ -33,7 +35,7 @@ export default function BottomNav({ page, onNav }: Props) {
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        width: 'calc(100% - 32px)',
+        width: '100%',
         maxWidth: 420,
         background: 'rgba(255,255,255,0.85)',
         backdropFilter: 'blur(20px)',
@@ -55,8 +57,7 @@ export default function BottomNav({ page, onNav }: Props) {
                 flex: 1, height: 44,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 3, position: 'relative',
-                borderRadius: 32,
+                gap: 3, position: 'relative', borderRadius: 32,
               }}
             >
               {active && (
@@ -77,8 +78,7 @@ export default function BottomNav({ page, onNav }: Props) {
                 <Icon size={20} strokeWidth={active ? 2.5 : 2} />
               </div>
               <span style={{
-                fontSize: 9, fontWeight: 700,
-                letterSpacing: '0.05em',
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.05em',
                 color: active ? 'var(--acc)' : 'var(--t3)',
                 position: 'relative', zIndex: 1,
               }}>
