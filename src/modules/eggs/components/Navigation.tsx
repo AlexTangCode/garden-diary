@@ -24,7 +24,6 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      /* No background — let the page colour show through */
       padding: '10px 16px',
       paddingBottom: 'calc(14px + var(--safe-b))',
     }}>
