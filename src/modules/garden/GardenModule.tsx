@@ -64,7 +64,7 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
     }}>
       {/* Header — hidden on map page (map has its own compact toolbar) */}
       {page !== 'map' && (
-        <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+        <div style={{ flexShrink: 0, zIndex: 10, position: 'relative', background: 'linear-gradient(to bottom, transparent 0%, var(--bg) 35%)' }}>
           <Header page={page} onAction={() => {
             document.dispatchEvent(new CustomEvent('hdr-action'));
           }} />
