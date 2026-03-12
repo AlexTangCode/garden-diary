@@ -2,8 +2,9 @@ import React from 'react';
 import type { GardenPageId } from '@/types/garden';
 import { Plus } from 'lucide-react';
 
+// map page has NO header action — add plot is handled inside MapView toolbar
 const PAGE_META: Record<GardenPageId, { title: string; emoji: string; actionLabel?: string }> = {
-  map:     { title: '菜地地图', emoji: '🗺️', actionLabel: '新菜地' },
+  map:     { title: '菜地地图', emoji: '🗺️' },          // ← no actionLabel = no button
   harvest: { title: '采摘记录', emoji: '🧺', actionLabel: '记录采摘' },
   spend:   { title: '支出账本', emoji: '📒', actionLabel: '记录支出' },
   stats:   { title: '数据统计', emoji: '📊' },
@@ -21,7 +22,7 @@ export default function Header({ page, onAction }: Props) {
   return (
     <div style={{
       flexShrink: 0,
-      padding: '14px 20px',
+      padding: '12px 16px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -29,13 +30,8 @@ export default function Header({ page, onAction }: Props) {
       borderBottom: '1px solid var(--bg2)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 20 }}>{meta.emoji}</span>
-        <span style={{
-          fontSize: 17,
-          fontWeight: 700,
-          color: 'var(--t1)',
-          letterSpacing: '-0.2px',
-        }}>
+        <span style={{ fontSize: 18 }}>{meta.emoji}</span>
+        <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', letterSpacing: '-0.2px' }}>
           {meta.title}
         </span>
       </div>
@@ -44,15 +40,11 @@ export default function Header({ page, onAction }: Props) {
         <button
           onClick={onAction}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 5,
-            padding: '8px 14px',
-            background: 'var(--acc)',
-            color: '#fff',
+            display: 'flex', alignItems: 'center', gap: 5,
+            padding: '7px 13px',
+            background: 'var(--acc)', color: '#fff',
             borderRadius: 'var(--r-xl)',
-            fontSize: 13,
-            fontWeight: 700,
+            fontSize: 13, fontWeight: 700,
             boxShadow: '0 3px 10px rgba(200,132,90,0.3)',
           }}
         >
