@@ -24,8 +24,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       paddingBottom: 'var(--safe-b)',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'flex-start',
+      alignItems: 'center',          /* vertically centre the pill */
       paddingTop: 8,
+      paddingLeft: 16,
+      paddingRight: 16,
       height: 'var(--tab-h)',
       flexShrink: 0,
     }}>
@@ -33,7 +35,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        width: 'calc(100% - 32px)',
+        width: '100%',
         maxWidth: 420,
         background: 'rgba(255,255,255,0.85)',
         backdropFilter: 'blur(20px)',
@@ -55,8 +57,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 flex: 1, height: 44,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 3, position: 'relative',
-                borderRadius: 32,
+                gap: 3, position: 'relative', borderRadius: 32,
               }}
             >
               {isActive && (
@@ -77,8 +78,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span style={{
-                fontSize: 9, fontWeight: 700,
-                letterSpacing: '0.05em',
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.05em',
                 color: isActive ? 'var(--acc)' : 'var(--t3)',
                 position: 'relative', zIndex: 1,
               }}>
