@@ -64,7 +64,7 @@ input, textarea, select {
 
   /* Layout — tab-h is the ONLY bottom nav height var used everywhere */
   --nav-h:  52px;   /* top ModuleNav height */
-  --tab-h:  64px;   /* bottom nav pill height */
+  --tab-h:  76px;   /* bottom nav pill height */
   --safe-t: env(safe-area-inset-top,    0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
 }
