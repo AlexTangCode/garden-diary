@@ -70,14 +70,14 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
-    /* Fill the pane completely */
+    /* Fill the pane completely — no background here so nav bottom gap is transparent */
     <div style={{
       position: 'absolute', inset: 0,
       display: 'flex', flexDirection: 'column',
-      background: 'var(--bg)', overflow: 'hidden',
+      overflow: 'hidden',
     }}>
-      {/* Scrollable view content — leaves room for bottom nav */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* Scrollable view content */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', background: 'var(--bg)' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
