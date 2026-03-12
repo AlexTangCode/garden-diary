@@ -272,10 +272,26 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
         overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
         paddingBottom: 16,
       }}>
+        {/* ── Page header — same style as Chloe's Chicken ── */}
+        <header style={{
+          paddingTop: 36, paddingBottom: 12,
+          paddingLeft: 24, paddingRight: 24,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', zIndex: 20,
+        }}>
+          <span style={{
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontSize: 22, fontWeight: 800, letterSpacing: '0.12em',
+            color: 'var(--acc)', opacity: 0.85,
+          }}>
+            Yi's Garden
+          </span>
+        </header>
+
         {/* Stats */}
         <div style={{
           background: 'var(--card)', borderRadius: 'var(--r-lg)',
-          margin: '12px 16px', display: 'flex', boxShadow: 'var(--sh)', overflow: 'hidden',
+          margin: '0 16px 12px', display: 'flex', boxShadow: 'var(--sh)', overflow: 'hidden',
         }}>
           {[{ label: '📍 菜地数', val: plots.length }, { label: '🌿 标注数', val: plotMk.length }].map((s, i) => (
             <div key={i} style={{
