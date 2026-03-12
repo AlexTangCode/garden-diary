@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Plot, Marker, MarkerStatus } from '@/types/garden';
-import { savePlot, deletePlot, saveMarker, deleteMarker, newId } from '@/services/garden.firebase';
+import { savePlot, saveMarker, deleteMarker, newId } from '@/services/garden.firebase';
 import Sheet from '../components/Sheet';
 import { FormField, BtnRow, Btn, inputStyle } from '../components/FormField';
 
@@ -13,17 +13,17 @@ interface Props {
 
 const COLORS = ['#C8845A','#6BA368','#5A82A8','#A87CA0','#5A9E8C','#C05858','#8A9E5A','#9E7A5A'];
 const STATUSES: MarkerStatus[] = ['🌱 播种','🌿 生长','🌼 收获','✅ 完成'];
-
-// null = no active edit mode (map taps do nothing)
-// 'add' = tap to add/edit markers
-// 'move' = drag to reposition
 type EditMode = null | 'add' | 'move';
 
 export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imgRef    = useRef<HTMLImageElement | null>(null);
-  const fileRef   = useRef<HTMLInputElement>(null);
-  const dragRef   = useRef<{ idx: number; offX: number; offY: number } | null>(null);
+  const canvasRef   = useRef<HTMLCanvasElement>(null);
+  const imgRef      = useRef<HTMLImageElement | null>(null);
+  const fileRef     = useRef<HTMLInputElement>(null);
+  const dragRef     = useRef<{ idx: number; offX: number; offY: number } | null>(null);
+
+  // swipe-to-change-plot on canvas
+  const swipeStartX = useRef<number | null>(null);
+  const swipeStartY = useRef<number | null>(null);
 
   const [editMode,    setEditMode]    = useState<EditMode>(null);
   const [showAddPlot, setShowAddPlot] = useState(false);
@@ -42,8 +42,15 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
 
   const pl     = plots.find(p => p.id === curPlot);
   const plotMk = markers.filter(m => m.plotId === curPlot);
+  const today  = () => new Date().toISOString().slice(0, 10);
 
-  const today = () => new Date().toISOString().slice(0, 10);
+  // ── switch plot by index offset ──
+  const switchPlot = useCallback((dir: 1 | -1) => {
+    if (!plots.length) return;
+    const idx = plots.findIndex(p => p.id === curPlot);
+    const next = (idx + dir + plots.length) % plots.length;
+    setCurPlot(plots[next].id);
+  }, [plots, curPlot, setCurPlot]);
 
   const redraw = useCallback(() => {
     const cv = canvasRef.current;
@@ -75,12 +82,10 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
       ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(lb, x, ly + 10); ctx.restore();
     });
-    // edit mode dashed border hint
     if (editMode) {
       ctx.save();
       ctx.strokeStyle = 'rgba(200,132,90,0.5)';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([8, 5]);
+      ctx.lineWidth = 3; ctx.setLineDash([8, 5]);
       ctx.strokeRect(2, 2, cv.width - 4, cv.height - 4);
       ctx.restore();
     }
@@ -104,14 +109,13 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
 
   useEffect(() => {
     if (pl?.image) loadImage(pl.image);
-    else imgRef.current = null;
+    else { imgRef.current = null; }
   }, [pl?.id, pl?.image]);
 
   const getPos = (clientX: number, clientY: number) => {
     const cv = canvasRef.current!;
     const r  = cv.getBoundingClientRect();
-    const sx = cv.width / r.width, sy = cv.height / r.height;
-    return { x: (clientX - r.left) * sx, y: (clientY - r.top) * sy };
+    return { x: (clientX - r.left) * (cv.width / r.width), y: (clientY - r.top) * (cv.height / r.height) };
   };
 
   const hitTest = (px: number, py: number) => {
@@ -123,37 +127,86 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
     return -1;
   };
 
-  const onDown = (px: number, py: number) => {
-    // ── HARD GUARD: if not in edit mode, map taps do absolutely nothing ──
-    if (!editMode) return;
-
-    const cv = canvasRef.current!;
-    if (editMode === 'add') {
-      const hit = hitTest(px, py);
-      if (hit !== -1) {
-        openMarker(plotMk[hit].id);
-      } else {
-        setPendingXY({ x: px / cv.width, y: py / cv.height });
-        openMarker(null);
+  // ── canvas touch handlers — swipe when not in edit mode ──
+  const handleCanvasTouchStart = (e: React.TouchEvent) => {
+    swipeStartX.current = e.touches[0].clientX;
+    swipeStartY.current = e.touches[0].clientY;
+    if (editMode) {
+      // in edit mode also track drag
+      const t = e.touches[0];
+      const p = getPos(t.clientX, t.clientY);
+      if (editMode === 'move') {
+        const i = hitTest(p.x, p.y);
+        if (i !== -1) {
+          dragRef.current = { idx: i, offX: p.x - plotMk[i].x * canvasRef.current!.width, offY: p.y - plotMk[i].y * canvasRef.current!.height };
+        }
       }
-    } else {
-      const i = hitTest(px, py);
-      if (i !== -1) {
-        dragRef.current = { idx: i, offX: px - plotMk[i].x * cv.width, offY: py - plotMk[i].y * cv.height };
+    }
+    e.preventDefault();
+  };
+
+  const handleCanvasTouchEnd = (e: React.TouchEvent) => {
+    if (swipeStartX.current === null || swipeStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - swipeStartX.current;
+    const dy = e.changedTouches[0].clientY - swipeStartY.current;
+    swipeStartX.current = null;
+    swipeStartY.current = null;
+    dragRef.current = null;
+
+    if (!editMode) {
+      // Swipe left/right to change plot (ignore vertical swipes)
+      if (Math.abs(dx) > 50 && Math.abs(dy) < Math.abs(dx) * 0.6) {
+        if (plots.length > 1) switchPlot(dx < 0 ? 1 : -1);
+        return;
+      }
+      // Short tap → no-op in browse mode
+      return;
+    }
+
+    // In edit mode: tap (short movement) triggers add/edit
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+      const t = e.changedTouches[0];
+      const p = getPos(t.clientX, t.clientY);
+      if (editMode === 'add') {
+        const hit = hitTest(p.x, p.y);
+        if (hit !== -1) { openMarker(plotMk[hit].id); }
+        else { setPendingXY({ x: p.x / canvasRef.current!.width, y: p.y / canvasRef.current!.height }); openMarker(null); }
       }
     }
   };
 
-  const onMove = (px: number, py: number) => {
+  const handleCanvasTouchMove = (e: React.TouchEvent) => {
     if (editMode !== 'move' || !dragRef.current) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = getPos(t.clientX, t.clientY);
     const cv = canvasRef.current!;
     const mk = plotMk[dragRef.current.idx];
-    const nx = Math.max(0.01, Math.min(0.99, (px - dragRef.current.offX) / cv.width));
-    const ny = Math.max(0.01, Math.min(0.99, (py - dragRef.current.offY) / cv.height));
+    const nx = Math.max(0.01, Math.min(0.99, (p.x - dragRef.current.offX) / cv.width));
+    const ny = Math.max(0.01, Math.min(0.99, (p.y - dragRef.current.offY) / cv.height));
     saveMarker({ ...mk, x: nx, y: ny });
   };
 
-  const onUp = () => { dragRef.current = null; };
+  // mouse handlers (desktop)
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!editMode) return;
+    const p = getPos(e.clientX, e.clientY);
+    if (editMode === 'add') {
+      const hit = hitTest(p.x, p.y);
+      if (hit !== -1) { openMarker(plotMk[hit].id); }
+      else { setPendingXY({ x: p.x / canvasRef.current!.width, y: p.y / canvasRef.current!.height }); openMarker(null); }
+    } else {
+      const i = hitTest(p.x, p.y);
+      if (i !== -1) dragRef.current = { idx: i, offX: p.x - plotMk[i].x * canvasRef.current!.width, offY: p.y - plotMk[i].y * canvasRef.current!.height };
+    }
+  };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (editMode !== 'move' || !dragRef.current) return;
+    const cv = canvasRef.current!; const p = getPos(e.clientX, e.clientY);
+    const mk = plotMk[dragRef.current.idx];
+    saveMarker({ ...mk, x: Math.max(0.01, Math.min(0.99, (p.x - dragRef.current.offX) / cv.width)), y: Math.max(0.01, Math.min(0.99, (p.y - dragRef.current.offY) / cv.height)) });
+  };
+  const onMouseUp = () => { dragRef.current = null; };
 
   const openAddPlot = () => {
     setPlotName(''); setPlotNote('');
@@ -163,10 +216,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
 
   const handleSavePlot = async () => {
     if (!plotName.trim()) return;
-    const p: Plot = {
-      id: newId(), name: plotName.trim(), note: plotNote.trim(),
-      color: plotColor, image: null, createdAt: Date.now(),
-    };
+    const p: Plot = { id: newId(), name: plotName.trim(), note: plotNote.trim(), color: plotColor, image: null, createdAt: Date.now() };
     await savePlot(p);
     setCurPlot(p.id);
     setShowAddPlot(false);
@@ -178,22 +228,16 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
       setMkVeg(m.name); setMkVar(m.variety ?? '');
       setMkStatus(m.status); setMkDate(m.date); setMkNote(m.note ?? '');
     } else {
-      setMkVeg(''); setMkVar('');
-      setMkStatus('🌱 播种'); setMkDate(today()); setMkNote('');
+      setMkVeg(''); setMkVar(''); setMkStatus('🌱 播种'); setMkDate(today()); setMkNote('');
     }
-    setEditMkId(id);
-    setShowMarker(true);
+    setEditMkId(id); setShowMarker(true);
   };
 
   const handleSaveMarker = async () => {
     if (!mkVeg.trim() || !curPlot) return;
-    const base = {
-      plotId: curPlot, name: mkVeg.trim(), variety: mkVar.trim(),
-      status: mkStatus, date: mkDate, note: mkNote.trim(),
-    };
+    const base = { plotId: curPlot, name: mkVeg.trim(), variety: mkVar.trim(), status: mkStatus, date: mkDate, note: mkNote.trim() };
     if (editMkId) {
-      const existing = markers.find(m => m.id === editMkId)!;
-      await saveMarker({ ...existing, ...base });
+      await saveMarker({ ...markers.find(m => m.id === editMkId)!, ...base });
     } else {
       await saveMarker({ id: newId(), createdAt: Date.now(), x: pendingXY.x, y: pendingXY.y, ...base });
     }
@@ -202,16 +246,14 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
 
   const handleDelMarker = async () => {
     if (!editMkId || !window.confirm('删除此标注？')) return;
-    await deleteMarker(editMkId);
-    setShowMarker(false);
+    await deleteMarker(editMkId); setShowMarker(false);
   };
 
   const handleImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f || !pl) return;
     const r = new FileReader();
     r.onload = async ev => { await savePlot({ ...pl, image: ev.target!.result as string }); };
-    r.readAsDataURL(f);
-    e.target.value = '';
+    r.readAsDataURL(f); e.target.value = '';
   };
 
   const btnStyle = (active: boolean): React.CSSProperties => ({
@@ -259,7 +301,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
           </div>
         ) : (
           <>
-            {/* Plot chips — only one "+ 添加菜地" button here */}
+            {/* Plot chips + swipe hint */}
             <div style={{ display: 'flex', gap: 8, padding: '4px 16px 8px', overflowX: 'auto' }}>
               {plots.map(p => (
                 <button key={p.id} onClick={() => setCurPlot(p.id)} style={{
@@ -274,7 +316,6 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
                   {p.name}
                 </button>
               ))}
-              {/* Single "添加菜地" button */}
               <button onClick={openAddPlot} style={{
                 flexShrink: 0, padding: '7px 14px', borderRadius: 20,
                 background: 'transparent', color: 'var(--acc)', fontSize: 13, fontWeight: 700,
@@ -282,7 +323,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
               }}>＋ 添加菜地</button>
             </div>
 
-            {/* Edit mode toolbar — add/move always visible, grey when inactive */}
+            {/* Toolbar */}
             <div style={{ display: 'flex', gap: 8, padding: '4px 16px 8px', alignItems: 'center' }}>
               <button onClick={() => setEditMode(m => m === 'add' ? null : 'add')} style={btnStyle(editMode === 'add')}>
                 ✚ 添加标注
@@ -305,7 +346,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
               }}>🗑</button>
             </div>
 
-            {/* Canvas */}
+            {/* Canvas — swipe left/right to switch plot when not editing */}
             {!pl?.image ? (
               <div onClick={() => fileRef.current?.click()} style={{
                 margin: '0 16px', padding: '48px 24px', textAlign: 'center', cursor: 'pointer',
@@ -317,24 +358,37 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
                 <div style={{ fontSize: 13, color: 'var(--t2)', marginTop: 4 }}>支持 JPG / PNG</div>
               </div>
             ) : (
-              <div style={{ margin: '0 16px', borderRadius: 'var(--r-lg)', overflow: 'hidden', boxShadow: 'var(--sh2)', background: 'var(--card)' }}>
+              <div style={{ margin: '0 16px', borderRadius: 'var(--r-lg)', overflow: 'hidden', boxShadow: 'var(--sh2)', background: 'var(--card)', position: 'relative' }}>
                 <canvas
                   ref={canvasRef}
                   style={{
                     display: 'block', width: '100%',
                     cursor: editMode === null ? 'default' : editMode === 'move' ? 'grab' : 'crosshair',
                   }}
-                  onMouseDown={e => { const p = getPos(e.clientX, e.clientY); onDown(p.x, p.y); }}
-                  onMouseMove={e => { const p = getPos(e.clientX, e.clientY); onMove(p.x, p.y); }}
-                  onMouseUp={onUp}
-                  onTouchStart={e => { e.preventDefault(); const t = e.touches[0]; const p = getPos(t.clientX, t.clientY); onDown(p.x, p.y); }}
-                  onTouchMove={e  => { e.preventDefault(); const t = e.touches[0]; const p = getPos(t.clientX, t.clientY); onMove(p.x, p.y); }}
-                  onTouchEnd={onUp}
+                  onMouseDown={onMouseDown}
+                  onMouseMove={onMouseMove}
+                  onMouseUp={onMouseUp}
+                  onTouchStart={handleCanvasTouchStart}
+                  onTouchMove={handleCanvasTouchMove}
+                  onTouchEnd={handleCanvasTouchEnd}
                 />
+                {/* Plot swipe hint dots */}
+                {plots.length > 1 && (
+                  <div style={{
+                    position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)',
+                    display: 'flex', gap: 5, pointerEvents: 'none',
+                  }}>
+                    {plots.map(p => (
+                      <div key={p.id} style={{
+                        width: p.id === curPlot ? 14 : 5, height: 5, borderRadius: 3,
+                        background: p.id === curPlot ? '#fff' : 'rgba(255,255,255,0.5)',
+                        transition: 'all .25s',
+                      }} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
-            {/* ✅ REMOVED: "已标注X个位置" text */}
-            {/* ✅ REMOVED: "删除菜地" danger link  */}
           </>
         )}
         <div style={{ height: 16 }} />
@@ -342,7 +396,6 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
 
       <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImg} />
 
-      {/* Sheet: Add Plot */}
       <Sheet open={showAddPlot} onClose={() => setShowAddPlot(false)} title="添加菜地"
         footer={<BtnRow><Btn variant="secondary" onClick={() => setShowAddPlot(false)}>取消</Btn><Btn onClick={handleSavePlot}>创建菜地</Btn></BtnRow>}
       >
@@ -364,7 +417,6 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
         </FormField>
       </Sheet>
 
-      {/* Sheet: Marker */}
       <Sheet open={showMarker} onClose={() => setShowMarker(false)} title={editMkId ? '编辑标注' : '添加标注'}
         footer={
           <BtnRow>
