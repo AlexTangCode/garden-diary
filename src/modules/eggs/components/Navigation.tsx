@@ -18,18 +18,16 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
   ];
 
   return (
-    /* Outer wrapper: full-width strip with breathing room on all sides */
     <div style={{
       width: '100%',
-      background: 'var(--bg)',
       flexShrink: 0,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      /* 12px gap above pill, 16px gap below + safe area */
-      padding: '12px 16px calc(16px + var(--safe-b))',
+      /* No background — let the page colour show through */
+      padding: '10px 16px',
+      paddingBottom: 'calc(14px + var(--safe-b))',
     }}>
-      {/* Pill */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-around',
@@ -42,7 +40,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
         borderRadius: 999,
         border: '1px solid rgba(255,255,255,0.5)',
         boxShadow: '0 8px 32px rgba(44,32,24,.13)',
-        height: 64,        /* tall enough to tap comfortably */
+        height: 64,
         padding: '0 6px',
       }}>
         {tabs.map((tab) => {
@@ -53,8 +51,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
               key={tab.id}
               onClick={() => onViewChange(tab.id)}
               style={{
-                flex: 1,
-                height: 56,        /* large tap target */
+                flex: 1, height: 56,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 gap: 4, position: 'relative', borderRadius: 999,
@@ -71,17 +68,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
-              <div style={{
-                color: isActive ? 'var(--acc)' : 'var(--t3)',
-                transition: 'color 0.2s', position: 'relative', zIndex: 1,
-              }}>
+              <div style={{ color: isActive ? 'var(--acc)' : 'var(--t3)', transition: 'color 0.2s', position: 'relative', zIndex: 1 }}>
                 <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               </div>
-              <span style={{
-                fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
-                color: isActive ? 'var(--acc)' : 'var(--t3)',
-                position: 'relative', zIndex: 1,
-              }}>
+              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', color: isActive ? 'var(--acc)' : 'var(--t3)', position: 'relative', zIndex: 1 }}>
                 {tab.label}
               </span>
             </button>
