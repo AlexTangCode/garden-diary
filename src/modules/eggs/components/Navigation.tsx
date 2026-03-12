@@ -24,10 +24,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       paddingBottom: 'var(--safe-b)',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',          /* vertically centre the pill */
-      paddingTop: 8,
-      paddingLeft: 16,
-      paddingRight: 16,
+      alignItems: 'center',
+      padding: '10px 16px',
       height: 'var(--tab-h)',
       flexShrink: 0,
     }}>
@@ -37,14 +35,14 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
         alignItems: 'center',
         width: '100%',
         maxWidth: 420,
-        background: 'rgba(255,255,255,0.85)',
+        background: 'rgba(255,255,255,0.88)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderRadius: 40,
         border: '1px solid rgba(255,255,255,0.4)',
         boxShadow: '0 6px 28px rgba(44,32,24,.11)',
-        height: 52,
-        padding: '0 4px',
+        height: 58,          /* taller pill */
+        padding: '0 6px',
       }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -54,10 +52,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
               key={tab.id}
               onClick={() => onViewChange(tab.id)}
               style={{
-                flex: 1, height: 44,
+                flex: 1, height: 50,   /* taller tap target */
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
-                gap: 3, position: 'relative', borderRadius: 32,
+                gap: 4, position: 'relative', borderRadius: 32,
               }}
             >
               {isActive && (
@@ -75,10 +73,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 color: isActive ? 'var(--acc)' : 'var(--t3)',
                 transition: 'color 0.2s', position: 'relative', zIndex: 1,
               }}>
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: '0.05em',
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
                 color: isActive ? 'var(--acc)' : 'var(--t3)',
                 position: 'relative', zIndex: 1,
               }}>
