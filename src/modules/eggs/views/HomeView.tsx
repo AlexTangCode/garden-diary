@@ -242,8 +242,9 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#F9F5F0] relative overflow-hidden">
-      <header className="pt-[72px] pb-4 px-10 flex items-center justify-between relative z-20">
+    <div className="h-full bg-[#F9F5F0] relative overflow-hidden">
+      {/* 顶部标题 — absolute，不占用布局流 */}
+      <header className="absolute top-0 left-0 right-0 pt-[72px] pb-4 px-10 flex items-center justify-between z-20">
         <div className="w-10"></div>
         <motion.h2
           initial={{ opacity: 0 }}
@@ -278,7 +279,8 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
         </div>
       ) : (
         <>
-          <div className="px-10 mt-2 mb-2 flex-shrink-0">
+          {/* 统计卡片 — absolute 顶部，不影响鸡的居中 */}
+          <div className="absolute left-0 right-0 px-10 z-10" style={{ top: 148 }}>
             <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 border border-white/40 shadow-[0_15px_35px_rgba(45,45,45,0.03)] flex justify-around items-center">
               <div className="text-center">
                 <div className="flex items-center gap-1.5 justify-center mb-1 text-[#D48C45]">
@@ -298,15 +300,16 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col justify-center items-center relative overflow-hidden">
-            <p className="text-[#A0A0A0] text-[10px] font-semibold uppercase tracking-[0.3em] opacity-60 cn-relaxed mb-3">点击母鸡记录产蛋</p>
+          {/* 鸡区域 — absolute 占满全屏，内容真正居中 */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <p className="text-[#A0A0A0] text-[10px] font-semibold uppercase tracking-[0.3em] opacity-60 cn-relaxed mb-4">点击母鸡记录产蛋</p>
             <div
               ref={scrollRef}
               onMouseDown={handleMouseDown}
               onMouseLeave={handleMouseLeave}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
-              className="w-full overflow-x-auto scroll-native flex items-center h-[260px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none"
+              className="w-full overflow-x-auto scroll-native flex items-center h-[280px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none pointer-events-auto"
             >
               <div className={`flex flex-nowrap min-w-full px-12 gap-[30px] items-center h-full ${hens.length <= 2 ? 'justify-center' : 'justify-start'}`}>
                 {hens.map((hen) => (
