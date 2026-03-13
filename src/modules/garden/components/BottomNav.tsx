@@ -25,7 +25,8 @@ export default function BottomNav({ page, onNav }: Props) {
       justifyContent: 'center',
       alignItems: 'center',
       padding: '10px 16px',
-      paddingBottom: 'calc(14px + var(--safe-b))',
+      paddingBottom: 'max(12px, var(--safe-b))',
+      background: 'var(--bg)',
     }}>
       <nav style={{
         display: 'flex',
