@@ -24,6 +24,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+      /* pill 本身带圆角，底部不需要任何 padding，safe-b 用 pill 内部消化 */
       padding: '10px 16px',
       paddingBottom: 'max(12px, var(--safe-b))',
       background: 'var(--bg)',
