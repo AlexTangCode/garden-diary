@@ -25,7 +25,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       justifyContent: 'center',
       alignItems: 'center',
       padding: '10px 16px',
-      paddingBottom: 'calc(14px + var(--safe-b))',
+      paddingBottom: 'max(12px, var(--safe-b))',
+      background: 'var(--bg)',
     }}>
       <div style={{
         display: 'flex',
