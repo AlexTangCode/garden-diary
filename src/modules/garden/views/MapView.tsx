@@ -315,9 +315,9 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
           <div style={{ width: 1, height: 40, background: 'rgba(229,211,197,0.3)' }} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', marginBottom: 4, color: '#B66649' }}>
-              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>标注数</span>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>品种数</span>
             </div>
-            <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1.5, color: '#2D2D2D' }}>{plotMk.length}</div>
+            <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1.5, color: '#2D2D2D' }}>{new Set(markers.map(m => m.name)).size}</div>
           </div>
         </div>
 
