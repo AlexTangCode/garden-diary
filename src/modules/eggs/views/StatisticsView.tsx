@@ -187,7 +187,7 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ hens, logs, expenses, o
   };
 
   return (
-    <div className="px-10 pb-44 min-h-full bg-[#F9F5F0] scroll-native overflow-y-auto" style={{ paddingTop: "calc(var(--safe-t) + 72px)" }}>
+    <div className="px-10 min-h-full bg-[#F9F5F0] scroll-native overflow-y-auto" style={{ paddingTop: "calc(var(--safe-t) + 72px)", paddingBottom: "calc(var(--tab-h) + var(--safe-b) + 24px)" }}>
       <header className="mb-10 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
