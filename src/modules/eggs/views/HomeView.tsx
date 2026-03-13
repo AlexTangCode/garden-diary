@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
-import { Egg, Calendar, Scale, Hash, X, Check, TrendingUp, CalendarDays, Download } from 'lucide-react';
+import { Egg, Calendar, Scale, Hash, X, Check, TrendingUp, CalendarDays } from 'lucide-react';
 import { Hen, EggLog, EggsView } from '../../../types/eggs';
 import { addEggLog, incrementEggInventory } from '../../../services/eggs.firebase';
 import HenGraphic from '../components/HenGraphic';
@@ -133,8 +133,9 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showPoster, setShowPoster] = useState(false);
   const [activeHen, setActiveHen] = useState<Hen | null>(null);
-
   const [entryWeight, setEntryWeight] = useState<number>(60);
+
+
   const [entryQuantity, setEntryQuantity] = useState<number>(1);
   const [entryDate, setEntryDate] = useState<string>(getLocalYMD(new Date()));
 
@@ -143,6 +144,13 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  // 监听顶部下载按钮事件（从 ModuleNav 发出）
+  useEffect(() => {
+    const handler = () => setShowPoster(true);
+    document.addEventListener('eggs-open-poster', handler);
+    return () => document.removeEventListener('eggs-open-poster', handler);
+  }, []);
 
   const laidTodayIds = useMemo(() => {
     const todayStr = getLocalYMD(new Date());
@@ -253,14 +261,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
         >
           Chloe's Chicken
         </motion.h2>
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowPoster(true)}
-          className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#D48C45] shadow-sm border border-[#E5D3C5]/20 active:bg-[#F9F5F0]"
-          title="下载本周战报"
-        >
-          <Download size={18} />
-        </motion.button>
+        <div className="w-10" />
       </header>
 
       {hens.length === 0 ? (
