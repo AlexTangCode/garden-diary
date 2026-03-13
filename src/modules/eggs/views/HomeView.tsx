@@ -1,3 +1,4 @@
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Egg, Calendar, Scale, Hash, X, Check, TrendingUp, CalendarDays } from 'lucide-react';
