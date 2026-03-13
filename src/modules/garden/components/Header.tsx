@@ -22,7 +22,7 @@ export default function Header({ page, onAction }: Props) {
   return (
     <div style={{
       flexShrink: 0,
-      padding: '72px 16px 12px',
+      padding: '16px 16px 14px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
