@@ -70,30 +70,27 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
-    /* Fill the pane completely — no background here so nav bottom gap is transparent */
+    /* Content fills full pane, nav floats on top */
     <div style={{
       position: 'absolute', inset: 0,
-      display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
-      {/* Scrollable view content */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', background: 'var(--bg)' }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentView}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22 }}
-            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-          >
-            {renderView()}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {/* Content fills entire pane including behind the nav */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentView}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.22 }}
+          style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+        >
+          {renderView()}
+        </motion.div>
+      </AnimatePresence>
 
-      {/* Bottom tab nav — pinned to bottom of THIS pane only */}
-      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative', }}>
+      {/* Floating nav — no background, hovers over content */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
         <Navigation
           currentView={currentView}
           onViewChange={v => { setCurrentView(v); refreshData(); }}
