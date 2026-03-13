@@ -40,7 +40,7 @@ const HenHeroItem: React.FC<{
   totalEggs: number;
 }> = ({ hen, onTap, isLaying, isSquishing, hasLaidToday, dustParticles, size = 140, totalEggs }) => {
   return (
-    <div className="relative flex flex-col items-center flex-shrink-0 select-none pb-12 w-[160px] h-full justify-center">
+    <div className="relative flex flex-col items-center flex-shrink-0 select-none pb-4 w-[180px] h-full justify-center">
       <div className="relative">
         <motion.div
           onTap={() => onTap(hen)}
@@ -243,7 +243,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
 
   return (
     <div className="flex flex-col h-full bg-[#F9F5F0] relative overflow-hidden">
-      <header className="pt-10 pb-4 px-10 flex items-center justify-between relative z-20">
+      <header className="pt-[72px] pb-4 px-10 flex items-center justify-between relative z-20">
         <div className="w-10"></div>
         <motion.h2
           initial={{ opacity: 0 }}
@@ -298,7 +298,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col justify-center relative overflow-hidden min-h-[420px]">
+          <div className="flex-1 flex flex-col justify-center items-center relative overflow-hidden">
             <div className="text-center mb-4">
               <p className="text-[#A0A0A0] text-[10px] font-semibold uppercase tracking-[0.3em] opacity-60 cn-relaxed">点击母鸡记录产蛋</p>
             </div>
@@ -308,7 +308,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
               onMouseLeave={handleMouseLeave}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
-              className="w-full overflow-x-auto scroll-native flex items-center h-[380px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none pb-8"
+              className="w-full overflow-x-auto scroll-native flex items-center h-[320px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none pb-4"
             >
               <div className={`flex flex-nowrap min-w-full px-12 gap-[30px] items-center h-full ${hens.length <= 2 ? 'justify-center' : 'justify-start'}`}>
                 {hens.map((hen) => (
