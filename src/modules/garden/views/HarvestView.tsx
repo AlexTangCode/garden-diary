@@ -33,14 +33,7 @@ export default function HarvestView({ plots, markers, harvests, curPlot }: Props
   const [hDate, setHDate] = useState(today());
   const [hNote, setHNote] = useState('');
 
-  useEffect(() => {
-    const handler = () => {
-      setHPlot(curPlot ?? ''); setHVeg(''); setHAmt(''); setHNote(''); setHDate(today());
-      setOpen(true);
-    };
-    document.addEventListener('hdr-action', handler);
-    return () => document.removeEventListener('hdr-action', handler);
-  }, [curPlot]);
+  const openNew = () => { setHPlot(curPlot ?? ''); setHVeg(''); setHAmt(''); setHNote(''); setHDate(today()); setOpen(true); };
 
   const vegs = [...new Set([...markers.map(m => m.name), ...harvests.map(h => h.veg)])];
   const pn = (id: string | null) => plots.find(p => p.id === id)?.name ?? '';
@@ -66,8 +59,18 @@ export default function HarvestView({ plots, markers, harvests, curPlot }: Props
   return (
     <>
       <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 16, animation: 'pgIn .25s ease' }}>
+        {/* 顶部操作栏 */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 16px 4px' }}>
+          <button onClick={openNew} style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '8px 16px', borderRadius: 999,
+            background: 'var(--acc)', color: '#fff',
+            fontSize: 13, fontWeight: 700,
+            boxShadow: '0 4px 14px rgba(200,132,90,.3)',
+          }}>＋ 记录采摘</button>
+        </div>
         {/* Filters */}
-        <div style={{ display: 'flex', gap: 8, padding: '12px 16px', overflowX: 'auto' }}>
+        <div style={{ display: 'flex', gap: 8, padding: '4px 16px', overflowX: 'auto' }}>
           <select value={fp} onChange={e => setFp(e.target.value)} style={selStyle}>
             <option value="">所有菜地</option>
             {plots.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
