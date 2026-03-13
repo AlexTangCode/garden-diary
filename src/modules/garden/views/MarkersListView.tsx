@@ -62,7 +62,7 @@ export default function MarkersListView({ markers, plots }: Props) {
     <div style={{
       position: 'absolute', inset: 0,
       overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
-      paddingBottom: 16, animation: 'pgIn .25s ease',
+      paddingBottom: 'calc(var(--tab-h) + var(--safe-b) + 24px)', animation: 'pgIn .25s ease',
     }}>
       {/* 顶部操作栏 — MarkersListView 无新增（从地图页添加） */}
       {/* Filters */}
