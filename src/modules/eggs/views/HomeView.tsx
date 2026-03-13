@@ -278,7 +278,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
         </div>
       ) : (
         <>
-          <div className="px-10 mt-4 mb-8 flex-shrink-0">
+          <div className="px-10 mt-2 mb-2 flex-shrink-0">
             <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 border border-white/40 shadow-[0_15px_35px_rgba(45,45,45,0.03)] flex justify-around items-center">
               <div className="text-center">
                 <div className="flex items-center gap-1.5 justify-center mb-1 text-[#D48C45]">
@@ -299,16 +299,14 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
           </div>
 
           <div className="flex-1 flex flex-col justify-center items-center relative overflow-hidden">
-            <div className="text-center mb-4">
-              <p className="text-[#A0A0A0] text-[10px] font-semibold uppercase tracking-[0.3em] opacity-60 cn-relaxed">点击母鸡记录产蛋</p>
-            </div>
+            <p className="text-[#A0A0A0] text-[10px] font-semibold uppercase tracking-[0.3em] opacity-60 cn-relaxed mb-3">点击母鸡记录产蛋</p>
             <div
               ref={scrollRef}
               onMouseDown={handleMouseDown}
               onMouseLeave={handleMouseLeave}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
-              className="w-full overflow-x-auto scroll-native flex items-center h-[320px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none pb-4"
+              className="w-full overflow-x-auto scroll-native flex items-center h-[260px] cursor-grab active:cursor-grabbing overscroll-x-contain select-none"
             >
               <div className={`flex flex-nowrap min-w-full px-12 gap-[30px] items-center h-full ${hens.length <= 2 ? 'justify-center' : 'justify-start'}`}>
                 {hens.map((hen) => (
