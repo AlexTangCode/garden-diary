@@ -292,20 +292,33 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
           </h2>
         </header>
 
-        {/* Stats */}
+        {/* Stats card — eggs 风格，与鸡蛋模块完全一致 */}
         <div style={{
-          background: 'var(--card)', borderRadius: 'var(--r-lg)',
-          margin: '0 16px 12px', display: 'flex', boxShadow: 'var(--sh)', overflow: 'hidden',
+          margin: '0 16px 12px',
+          background: 'rgba(255,255,255,0.70)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 32,
+          padding: '20px 24px',
+          border: '1px solid rgba(255,255,255,0.4)',
+          boxShadow: '0 15px 35px rgba(45,45,45,0.03)',
+          display: 'flex',
+          justifyContent: 'space-around',
+          alignItems: 'center',
         }}>
-          {[{ label: '📍 菜地数', val: plots.length }, { label: '🌿 标注数', val: plotMk.length }].map((s, i) => (
-            <div key={i} style={{
-              flex: 1, padding: '14px', textAlign: 'center',
-              ...(i > 0 ? { borderLeft: '1px solid rgba(44,32,24,.08)' } : {}),
-            }}>
-              <div style={{ fontSize: 12, color: 'var(--acc)', fontWeight: 700, marginBottom: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: -2, lineHeight: 1, color: 'var(--t1)' }}>{s.val}</div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', marginBottom: 4, color: 'var(--acc)' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>菜地数</span>
             </div>
-          ))}
+            <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1.5, color: '#2D2D2D' }}>{plots.length}</div>
+          </div>
+          <div style={{ width: 1, height: 40, background: 'rgba(229,211,197,0.3)' }} />
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', marginBottom: 4, color: '#B66649' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>标注数</span>
+            </div>
+            <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1.5, color: '#2D2D2D' }}>{plotMk.length}</div>
+          </div>
         </div>
 
         {plots.length === 0 ? (
