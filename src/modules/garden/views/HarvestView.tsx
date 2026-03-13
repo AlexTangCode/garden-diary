@@ -59,18 +59,8 @@ export default function HarvestView({ plots, markers, harvests, curPlot }: Props
   return (
     <>
       <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 16, animation: 'pgIn .25s ease' }}>
-        {/* 顶部操作栏 */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '12px 16px 4px' }}>
-          <button onClick={openNew} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '8px 16px', borderRadius: 999,
-            background: 'var(--acc)', color: '#fff',
-            fontSize: 13, fontWeight: 700,
-            boxShadow: '0 4px 14px rgba(200,132,90,.3)',
-          }}>＋ 记录采摘</button>
-        </div>
-        {/* Filters */}
-        <div style={{ display: 'flex', gap: 8, padding: '4px 16px', overflowX: 'auto' }}>
+        {/* Filters + 新增按钮同一行 */}
+        <div style={{ display: 'flex', gap: 8, padding: '12px 16px', overflowX: 'auto', alignItems: 'center' }}>
           <select value={fp} onChange={e => setFp(e.target.value)} style={selStyle}>
             <option value="">所有菜地</option>
             {plots.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -80,6 +70,13 @@ export default function HarvestView({ plots, markers, harvests, curPlot }: Props
             {vegs.map(v => <option key={v} value={v}>{v}</option>)}
           </select>
           <input type="month" value={fm} onChange={e => setFm(e.target.value)} style={selStyle} />
+          <button onClick={openNew} style={{
+            flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5,
+            padding: '8px 16px', borderRadius: 999,
+            background: 'var(--acc)', color: '#fff',
+            fontSize: 13, fontWeight: 700,
+            boxShadow: '0 4px 14px rgba(200,132,90,.3)',
+          }}>＋ 记录</button>
         </div>
 
         {/* Stat tiles */}
