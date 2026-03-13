@@ -44,7 +44,7 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        background: 'var(--bg)',
+        background: '#F9F5F0',
       }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🥚</div>
         <p style={{ color: 'var(--t3)', fontWeight: 600, fontSize: 14 }}>加载中…</p>
@@ -70,12 +70,11 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
-    /* Content fills full pane, nav floats on top */
     <div style={{
       position: 'absolute', inset: 0,
+      background: '#F9F5F0',
       overflow: 'hidden',
     }}>
-      {/* Content fills entire pane including behind the nav */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentView}
@@ -89,7 +88,6 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Floating nav — no background, hovers over content */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
         <Navigation
           currentView={currentView}
@@ -97,7 +95,6 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
         />
       </div>
 
-      {/* Toast notification */}
       <AnimatePresence>
         {notification && (
           <motion.div
