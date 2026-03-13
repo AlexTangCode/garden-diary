@@ -68,6 +68,15 @@ const AppShell: React.FC = () => {
         )}
       </div>
 
+      {/* 底部 safe area 填充块 — 防止导航 pill 下方露出底色条 */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: 'var(--safe-b)',
+        background: '#F9F5F0',
+        zIndex: 5,
+      }} />
+
       {/* 悬浮顶部导航（滑动手势监听区） */}
       <div
         ref={navRef}
