@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Leaf, X, Calendar, MapPin, Package } from 'lucide-react';
 import type { Plot, Marker, HarvestLog } from '../../../types/garden';
 import { saveHarvest, deleteHarvest, newId } from '../../../services/garden.firebase';
@@ -58,7 +58,7 @@ export default function HarvestView({ plots, markers, harvests, curPlot }: Props
 
   return (
     <>
-      <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 16, animation: 'pgIn .25s ease' }}>
+      <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never, paddingBottom: 'calc(var(--tab-h) + var(--safe-b) + 24px)', animation: 'pgIn .25s ease' }}>
         {/* Filters + 新增按钮同一行 */}
         <div style={{ display: 'flex', gap: 8, padding: '12px 16px', overflowX: 'auto', alignItems: 'center' }}>
           <select value={fp} onChange={e => setFp(e.target.value)} style={selStyle}>
