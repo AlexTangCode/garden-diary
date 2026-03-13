@@ -9,7 +9,6 @@ import SpendView      from './views/SpendView';
 import StatsView      from './views/StatsView';
 import MarkersListView from './views/MarkersListView';
 import BottomNav      from './components/BottomNav';
-import Header         from './components/Header';
 
 interface Props { isActive: boolean; }
 
@@ -57,31 +56,14 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
   };
 
   return (
-    <div style={{
-      position: 'absolute', inset: 0,
-      overflow: 'hidden',
-    }}>
-      {/* Header — sits below the floating ModuleNav (60px clearance) */}
-      {page !== 'map' && (
-        <div style={{ position: 'absolute', top: 60, left: 0, right: 0, zIndex: 10 }}>
-          <Header page={page} onAction={() => {
-            document.dispatchEvent(new CustomEvent('hdr-action'));
-          }} />
-        </div>
-      )}
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: 'var(--bg)' }}>
 
-      {/* Page content — pushed below ModuleNav + Header (or just ModuleNav for map) */}
-      <div style={{
-        position: 'absolute',
-        top: page === 'map' ? 60 : 116,   /* 60 ModuleNav + 56 Header */
-        left: 0, right: 0,
-        bottom: 0,
-        overflow: 'hidden',
-      }}>
+      {/* 全部页面：内容从 ModuleNav 下方开始（top: 60），Header 已移除 */}
+      <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
         {renderPage()}
       </div>
 
-      {/* Floating nav — no background, hovers over content */}
+      {/* 悬浮底部导航 */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
         <BottomNav page={page} onNav={setPage} />
       </div>
