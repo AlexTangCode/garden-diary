@@ -86,7 +86,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ expenses, onRefresh, onNotify
   };
 
   return (
-    <div className="p-10 pb-44 bg-[#F9F5F0] min-h-full overflow-y-auto scroll-native">
+    <div className="pt-[88px] px-10 pb-44 bg-[#F9F5F0] min-h-full overflow-y-auto scroll-native">
       <div className="flex items-center justify-between mb-12">
         <div>
           <h1 className="font-serif text-4xl font-extrabold text-[#2D2D2D] tracking-tighter">支出管理</h1>
