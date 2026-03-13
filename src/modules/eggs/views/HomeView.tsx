@@ -253,7 +253,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   return (
     <div className="h-full bg-[#F9F5F0] relative overflow-hidden">
       {/* 顶部标题 — absolute，不占用布局流 */}
-      <header className="absolute top-0 left-0 right-0 pt-[60px] pb-4 px-10 flex items-center justify-between z-20" style={{ height: 148 }}>
+      <header className="absolute top-0 left-0 right-0 pb-4 px-10 flex items-center justify-between z-20" style={{ paddingTop: "calc(var(--safe-t) + 12px)", height: "calc(var(--safe-t) + 96px)" }} style={{ height: 'calc(var(--safe-t) + 96px)' }}>
         <div className="w-10"></div>
         <motion.h2
           initial={{ opacity: 0 }}
@@ -282,7 +282,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
       ) : (
         <>
           {/* 统计卡片 — absolute 顶部，不影响鸡的居中 */}
-          <div className="absolute left-0 right-0 px-10 z-10" style={{ top: 148 }}>
+          <div className="absolute left-0 right-0 px-10 z-10" style={{ top: 'calc(var(--safe-t) + 96px)' }}>
             <div className="bg-white/70 backdrop-blur-xl rounded-[32px] p-6 border border-white/40 shadow-[0_15px_35px_rgba(45,45,45,0.03)] flex justify-around items-center">
               <div className="text-center">
                 <div className="flex items-center gap-1.5 justify-center mb-1 text-[#D48C45]">
