@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import type { ModuleId } from './AppShell';
-import { Egg, Leaf, LogOut } from 'lucide-react';
+import { Egg, Leaf, LogOut, Download } from 'lucide-react';
 
 interface Module { id: ModuleId; label: string; icon: string }
 interface Props {
@@ -9,22 +9,47 @@ interface Props {
   active: ModuleId;
   onSwitch: (id: ModuleId) => void;
   onLogout: () => void;
+  onDownload?: () => void;
 }
 
-const ModuleNav: React.FC<Props> = ({ modules, active, onSwitch, onLogout }) => {
+const BTN_STYLE: React.CSSProperties = {
+  width: 36, height: 36,
+  borderRadius: '50%',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: 'var(--t3)',
+  background: 'rgba(255,255,255,0.82)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  boxShadow: '0 4px 20px rgba(44,32,24,.12)',
+  border: '1px solid rgba(255,255,255,0.5)',
+  pointerEvents: 'auto',
+};
+
+const ModuleNav: React.FC<Props> = ({ modules, active, onSwitch, onLogout, onDownload }) => {
   return (
     <div style={{
       position: 'absolute',
       top: 0, left: 0, right: 0,
       zIndex: 200,
-      /* no background, no shadow — fully transparent bar */
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 'calc(var(--safe-t) + 12px) 16px 0',
       pointerEvents: 'none',
     }}>
-      {/* Centred pill switcher */}
+
+      {/* 左上角：下载按钮（仅 eggs 模块显示） */}
+      {active === 'eggs' && onDownload && (
+        <button
+          onClick={onDownload}
+          title="下载本周战报"
+          style={{ ...BTN_STYLE, position: 'absolute', left: 16, top: 'calc(var(--safe-t) + 12px)' }}
+        >
+          <Download size={15} strokeWidth={2} />
+        </button>
+      )}
+
+      {/* 中间模块切换胶囊 */}
       <div style={{
         display: 'flex',
         background: 'rgba(255,255,255,0.82)',
@@ -76,25 +101,11 @@ const ModuleNav: React.FC<Props> = ({ modules, active, onSwitch, onLogout }) => 
         })}
       </div>
 
-      {/* Logout — absolute right */}
+      {/* 右上角：退出按钮 */}
       <button
         onClick={onLogout}
         title="退出登录"
-        style={{
-          position: 'absolute',
-          right: 16,
-          top: 'calc(var(--safe-t) + 12px)',
-          width: 36, height: 36,
-          borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--t3)',
-          background: 'rgba(255,255,255,0.82)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 4px 20px rgba(44,32,24,.12)',
-          border: '1px solid rgba(255,255,255,0.5)',
-          pointerEvents: 'auto',
-        }}
+        style={{ ...BTN_STYLE, position: 'absolute', right: 16, top: 'calc(var(--safe-t) + 12px)' }}
       >
         <LogOut size={15} strokeWidth={2} />
       </button>
