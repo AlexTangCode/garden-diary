@@ -16,8 +16,8 @@ const AppShell: React.FC = () => {
   const { logout } = useAuth();
   const [activeModule, setActiveModule] = useState<ModuleId>('eggs');
 
-  const navRef        = useRef<HTMLDivElement>(null);
-  const touchStartX   = useRef<number | null>(null);
+  const navRef      = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const handleNavTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -32,12 +32,18 @@ const AppShell: React.FC = () => {
     if (dx > 0 && activeModule === 'garden') setActiveModule('eggs');
   }, [activeModule]);
 
+  // 下载按钮通过自定义事件通知 HomeView 打开 PosterModal
+  const handleDownload = useCallback(() => {
+    document.dispatchEvent(new CustomEvent('eggs-open-poster'));
+  }, []);
+
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'var(--bg)', overflow: 'hidden',
+      background: '#F9F5F0',
+      overflow: 'hidden',
     }}>
-      {/* ── Full-screen content ── */}
+      {/* 全屏内容区 */}
       <div style={{ position: 'absolute', inset: 0 }}>
         {activeModule === 'eggs' ? (
           <motion.div
@@ -62,7 +68,7 @@ const AppShell: React.FC = () => {
         )}
       </div>
 
-      {/* ── Floating ModuleNav — swipe target ── */}
+      {/* 悬浮顶部导航（滑动手势监听区） */}
       <div
         ref={navRef}
         onTouchStart={handleNavTouchStart}
@@ -74,6 +80,7 @@ const AppShell: React.FC = () => {
           active={activeModule}
           onSwitch={setActiveModule}
           onLogout={logout}
+          onDownload={handleDownload}
         />
       </div>
     </div>
