@@ -14,31 +14,28 @@ interface Props {
 const ModuleNav: React.FC<Props> = ({ modules, active, onSwitch, onLogout }) => {
   return (
     <div style={{
-      flexShrink: 0,
-      background: 'var(--card)',
-      boxShadow: 'var(--sh)',
+      position: 'absolute',
+      top: 0, left: 0, right: 0,
+      zIndex: 200,
+      /* no background, no shadow — fully transparent bar */
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: 'calc(var(--safe-t) + 8px) 16px 8px',
-      zIndex: 100,
+      justifyContent: 'center',
+      padding: 'calc(var(--safe-t) + 12px) 16px 0',
+      pointerEvents: 'none',
     }}>
-      {/* App title */}
-      <span style={{
-        fontSize: 13, fontWeight: 800,
-        color: 'var(--t1)', letterSpacing: '-0.2px', whiteSpace: 'nowrap',
-      }}>
-        🏡 Chloe's Backyard
-      </span>
-
-      {/* Icon-only pill switcher */}
+      {/* Centred pill switcher */}
       <div style={{
         display: 'flex',
-        background: 'var(--bg)',
+        background: 'rgba(255,255,255,0.82)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         borderRadius: 999,
         padding: 3,
         gap: 4,
-        boxShadow: 'inset 0 1px 3px rgba(44,32,24,.08)',
+        boxShadow: '0 4px 20px rgba(44,32,24,.12)',
+        border: '1px solid rgba(255,255,255,0.5)',
+        pointerEvents: 'auto',
       }}>
         {modules.map(m => {
           const isActive = m.id === active;
@@ -79,17 +76,25 @@ const ModuleNav: React.FC<Props> = ({ modules, active, onSwitch, onLogout }) => 
         })}
       </div>
 
-      {/* Logout */}
+      {/* Logout — absolute right */}
       <button
         onClick={onLogout}
         title="退出登录"
         style={{
-          width: 32, height: 32, borderRadius: '50%',
+          position: 'absolute',
+          right: 16,
+          top: 'calc(var(--safe-t) + 12px)',
+          width: 36, height: 36,
+          borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--t3)', transition: 'color 0.15s, background 0.15s',
+          color: 'var(--t3)',
+          background: 'rgba(255,255,255,0.82)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: '0 4px 20px rgba(44,32,24,.12)',
+          border: '1px solid rgba(255,255,255,0.5)',
+          pointerEvents: 'auto',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg2)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <LogOut size={15} strokeWidth={2} />
       </button>
