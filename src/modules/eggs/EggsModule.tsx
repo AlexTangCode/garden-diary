@@ -93,7 +93,7 @@ const EggsModule: React.FC<Props> = ({ isActive }) => {
       </div>
 
       {/* Bottom tab nav — pinned to bottom of THIS pane only */}
-      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative', background: 'linear-gradient(to bottom, transparent 0%, var(--bg) 35%)' }}>
+      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative', }}>
         <Navigation
           currentView={currentView}
           onViewChange={v => { setCurrentView(v); refreshData(); }}
