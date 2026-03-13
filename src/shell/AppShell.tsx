@@ -40,7 +40,6 @@ const AppShell: React.FC = () => {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: '#F9F5F0',
       overflow: 'hidden',
     }}>
       {/* 全屏内容区 */}
