@@ -64,6 +64,7 @@ export default function MarkersListView({ markers, plots }: Props) {
       overflowY: 'auto', WebkitOverflowScrolling: 'touch' as never,
       paddingBottom: 16, animation: 'pgIn .25s ease',
     }}>
+      {/* 顶部操作栏 — MarkersListView 无新增（从地图页添加） */}
       {/* Filters */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 16px', flexWrap: 'wrap' }}>
         <select value={filterPlot} onChange={e => setFilterPlot(e.target.value)} style={selStyle}>
