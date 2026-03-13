@@ -59,25 +59,24 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
   return (
     <div style={{
       position: 'absolute', inset: 0,
-      display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
       {/* Header — hidden on map page */}
       {page !== 'map' && (
-        <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
           <Header page={page} onAction={() => {
             document.dispatchEvent(new CustomEvent('hdr-action'));
           }} />
         </div>
       )}
 
-      {/* Page content */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0, background: 'var(--bg)' }}>
+      {/* Page content fills full pane */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
         {renderPage()}
       </div>
 
-      {/* Bottom nav — no background, floats over transparent gap */}
-      <div style={{ flexShrink: 0, zIndex: 10, position: 'relative' }}>
+      {/* Floating nav — no background, hovers over content */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10 }}>
         <BottomNav page={page} onNav={setPage} />
       </div>
 
