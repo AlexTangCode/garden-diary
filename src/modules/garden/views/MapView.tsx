@@ -274,7 +274,7 @@ export default function MapView({ plots, markers, curPlot, setCurPlot }: Props) 
       }}>
         {/* ── Page header — pixel-identical to Chloe's Chicken ── */}
         <header style={{
-          paddingTop: 72, paddingBottom: 16,        /* clear ModuleNav */
+          paddingTop: 16, paddingBottom: 16,
           paddingLeft: 40, paddingRight: 40,         /* px-10 */
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative', zIndex: 20,
