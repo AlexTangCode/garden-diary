@@ -68,15 +68,6 @@ const AppShell: React.FC = () => {
         )}
       </div>
 
-      {/* 底部 safe area 填充块 — 颜色跟随当前模块，消除色条 */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        height: 'var(--safe-b)',
-        background: activeModule === 'eggs' ? '#F9F5F0' : 'var(--bg)',
-        zIndex: 5,
-      }} />
-
       {/* 悬浮顶部导航（滑动手势监听区） */}
       <div
         ref={navRef}
