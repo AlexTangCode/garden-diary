@@ -68,12 +68,12 @@ const AppShell: React.FC = () => {
         )}
       </div>
 
-      {/* 底部 safe area 填充块 — 防止导航 pill 下方露出底色条 */}
+      {/* 底部 safe area 填充块 — 颜色跟随当前模块，消除色条 */}
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
         height: 'var(--safe-b)',
-        background: '#F9F5F0',
+        background: activeModule === 'eggs' ? '#F9F5F0' : 'var(--bg)',
         zIndex: 5,
       }} />
 
