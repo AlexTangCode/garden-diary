@@ -253,7 +253,7 @@ const HomeView: React.FC<HomeViewProps> = ({ hens, logs, onRefresh, onNotify, on
   return (
     <div className="h-full bg-[#F9F5F0] relative overflow-hidden">
       {/* 顶部标题 — absolute，不占用布局流 */}
-      <header className="absolute top-0 left-0 right-0 pb-4 px-10 flex items-center justify-between z-20" style={{ paddingTop: "calc(var(--safe-t) + 56px)", height: "calc(var(--safe-t) + 116px)" }}>
+      <header className="absolute left-0 right-0 flex items-center justify-center z-20" style={{ top: "calc(var(--safe-t) + 48px)", height: "68px" }}>
         <div className="w-10"></div>
         <motion.h2
           initial={{ opacity: 0 }}
