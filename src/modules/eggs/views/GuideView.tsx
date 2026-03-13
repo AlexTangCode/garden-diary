@@ -74,7 +74,7 @@ const GuideView: React.FC<GuideViewProps> = ({ onNotify }) => {
   const slots = useMemo(() => Array.from({ length: 12 }), []);
 
   return (
-    <div className="px-10 pb-44 bg-[#F9F5F0] min-h-full scroll-native overflow-y-auto" style={{ paddingTop: "calc(var(--safe-t) + 72px)" }}>
+    <div className="px-10 bg-[#F9F5F0] min-h-full scroll-native overflow-y-auto" style={{ paddingTop: "calc(var(--safe-t) + 72px)", paddingBottom: "calc(var(--tab-h) + var(--safe-b) + 24px)" }}>
       <header className="mb-10 flex items-center justify-between">
         <div>
           <h1 className="font-serif text-4xl font-extrabold text-[#2D2D2D] tracking-tighter">吃蛋指南</h1>
