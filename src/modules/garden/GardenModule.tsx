@@ -59,7 +59,7 @@ const GardenModule: React.FC<Props> = ({ isActive }) => {
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: 'var(--bg)' }}>
 
       {/* 全部页面：内容从 ModuleNav 下方开始（top: 60），Header 已移除 */}
-      <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 'calc(var(--safe-t) + 60px)', left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
         {renderPage()}
       </div>
 
